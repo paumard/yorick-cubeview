@@ -1,0 +1,111 @@
+.\" $Id: cubeview.1,v 1.1 2008-03-07 10:03:02 paumard Exp $
+.\"
+.IX Title "CUBEVIEW 1"
+.TH CUBEVIEW 1 "2008\-01\-03" "" "Yorick"
+.SH "NAME"
+cubeview \- view 3D FITS files
+.SH "SYNOPSIS"
+.IX Header "SYNOPSIS"
+\&\fBcubeview\fR [\fB\-\-stand\-alone\fR[=\fIstand\-alone\fR]] [\fB\-\-ui\fR=\fIui\fR] [\fIfile\fR]
+.br
+or
+\&\fByorick \-i cubeview.i\fR [\fB\-\-stand\-alone\fR[=\fIstand\-alone\fR]] [\fB\-\-ui\fR=\fIui\fR] [\fIfile\fR]
+.br
+or from within \fIyorick\fR(1): \fBcubeview\fR,options or \fBcv_gtk\fR[,options].
+.SH "DESCRIPTION"
+.IX Header "DESCRIPTION"
+Cubeview is a 3D data viewer specialized in spectro\-imaging,
+implemented using the Yorick interpreted language (see
+\fIyorick\fR(1)). A 3D data cube in the sense of cubeview is a
+three\-dimensional array of numbers, usually stored in a FITS file.
+.PP
+Cubeview can function either as a stand\-alone viewer for viewing 3D
+FITS files (in which case you don't need to know much about Yorick to
+use it) or as a Yorick package, in which case it is possible to view
+Yorick arrays directly. Cubeview can be customized and enhanced
+through "hooks" which can automatically perform custom actions while
+the cube is being viewed. For instance, it is possible to overplot
+some complex contour map over the slice view each time it is
+refreshed. For more details about the cubeview API in Yorick, read
+cubeview.i. When cubeview is launched from a terminal window, it is
+possible to type Yorick commands in that window almost at any time. In
+the following, this manpage assumes the reader is not a regular Yorick
+user.
+.PP
+Since Cubeview is specialized in spectro\-imaging, it assumes the first
+two dimensions of the cube are of spatial nature while the third is
+spectral. Cubeview is able to correclty interpret the FITS headers of
+data produced with the decommissioned BEAR instrument which used to
+be operated at CFHT and SINFONI currently operated at ESO VLT. Other
+data may be interpreted if they follow the same conventions. If the
+FITS header cannot be interpreted, the axes in the plots cannot be
+trusted, but you can still explore the 3D cube.
+.PP
+Cubeview uses three windows: a toolbox, a slice image window and a
+spectrum plot window. The toolbox allows to open a new FITS file, save
+the currently selected sub\-cube (determined both by the spectrum and
+slice being viewed), set various display parameters, and perform
+various actions, most notably selecting a new spectrum or a new
+slice. If \fIfile\fR is set in the calling sequence, then all three
+windows open at once, else only the toolbox appears at first, allowing
+the user to select a file to read.
+.SH "MAIN PAGE"
+The \fIMain\fR page in the toolbox offers reasonably self\-explanatory
+buttons to perform various actions. To select a new slice, click on
+\fISlice\fR in the \fISelect\fR frame, then drag the mouse pointer
+over the region of interest in the spectrum window. Conversely, a new
+sepctrum is selected by first clicking \fISpectrum\fR and then using
+the mouse in the slice window. How you use the mouse for selecting a
+spectrum depends on the \fIAperture type\fR selected in the
+\fISpectrum\fR property page:
+.IP \fICircular\fR 4
+left button: click to select new center; right button: drag from new
+center to new edge;
+.IP \fISquare\fR 4
+left button: click to select new center; right button: drag from new
+center to new edge;
+.IP \fIRectangular\fR 4
+drag from one corner to the opposite.
+.SH "SPECTRUM PAGE"
+The \fISpectrum\fR property page allows to select the \fIAperture
+type\fR mentioned above. In addition, if the FITS header has been
+interpreted correctly, it is possible to switch the spectral axis
+between \fIWavelength\fR, \fIFrequency\fR, \fIChannels\fR (raw indices
+in the cube, the only meaningful value if the header was not
+interpreted correctly) and \fIVelocity\fR relative to a \fIReference
+wavelength\fR which can also be set on this page. \fISmoothing FWHM\fR
+controls whether the displayed spectrum should be Gaussian\-smoothed to
+increase the apparent signal\-to\-noise.
+.SH "SLICE PAGE"
+The slice can be displayed in two modes. The most usual one (named
+\fINormal (palette)\fR in Cubeview) is palette\-based. The
+corresponding \fIColor palette\fR can be selected among the standard
+Yorick ones. Alternatively, Cubeview can produce three\-color images
+using virtual, overlapping red, green and blue filters. The slice can
+then be displayed either at 8 or 24 bit color\-depth. 24 bit color
+depth is usually better, but 8 bit is useful to save to some image
+formats, which you can do from the Yorick command line. \fISmoothing
+FWHM\fR and \fIOversampling\fR control two means of smoothing the
+displayed image for eye candy.
+.SH "OPTIONS"
+.IX Header "OPTIONS"
+.IP "\fB\-\-stand\-alone\fR[=(false|true)]" 4
+Control whether closing the toolbox window exits Yorick. \-\-stand\-alone
+is equivalent to \-\-stand\-alone=true. This is the default for he first
+form of invocation. If set to \fIfalse\fR, it is necessary to type
+"quit" at the Yorick prompt to completely quit the application.
+.IP "\fB\-\-ui\fR=(gtk|tws|text)" 4
+Control the look\-and\-feel of the toolbox. The default toolbox uses the
+GTK toolkit, and requires several software components in addition to
+Yorick (python, pygtk and libglade). An alternative toolbox coded
+entirely in Yorick is also available. It uses the "TWS" package to
+draw buttons and other widgets. It is uglier, but more portable, than
+the GTK\-based toolbox. Finally, it is possible to completely control
+cubeview from the Yorick prompt, in "text" mode. Type "cv_library" for
+a list of available commands.
+.SH "SEE ALSO"
+.IX Header "SEE ALSO"
+\&\fIyorick\fR\|(1), cubeview.i
+.SH "AUTHORS"
+.IX Header "AUTHORS"
+Thibaut Paumard <paumard@users.sourceforge.net>

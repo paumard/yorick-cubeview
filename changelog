@@ -1,0 +1,38 @@
+cubeview (1.4)
+
+  * improve export capabilities: export window plot or data,
+    e.g. slice to FITS...
+  * add icons and .desktop file
+
+ -- Thibaut Paumard <paumard@users.sourceforge.net>  Wed, 05 Mar 2008 09:46:52 +0100
+
+cubeview (1.3)
+
+  * add functions to export a view to an image file (eps, pdf, jpg or png)
+
+ -- Thibaut Paumard <paumard@users.sourceforge.net>  Mon, 03 Mar 2008 21:25:46 +0100
+
+cubeview (1.2.1)
+
+  * clean files moved to yutils
+  * update documentation
+
+ -- Thibaut Paumard <paumard@users.sourceforge.net>  Thu, 17 Jan 2008 15:42:36 +0100
+
+cubeview (1.2)
+
+  * add files:
+      * manpage cubeview.1
+      * changelog
+      * Makefile
+      * cubeview_start.i
+  * switch back from newfits.i to fits.i
+  * split some items out of cv_interns:
+    cv_interns.cube   -> cv_cube (performance)
+              .valids -> cv_valids (performance)
+              .header -> cv_fh (a list cannot be a struct member)
+
+ -- Thibaut Paumard <paumard@users.sourceforge.net>  Thu,  3 Jan 2008 14:58:56 +0100
+
+Local variables:
+  mode: debian-changelog

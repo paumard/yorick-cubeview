@@ -1,0 +1,59 @@
+$Id: README,v 1.1 2008-03-07 10:03:02 paumard Exp $
+
+                --== Cubeview for Yorick ==--
+
+    A 3D data viewer for Yorick, geared towards spectro-imaging.
+
+    Copyright (C) 2007-2008  Thibaut Paumard <paumard@users.sourceforge.net>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+A "cube" in the sense of Cubeview is an three-dimensional array of
+numbers. Two dimensions represent spatial coordinates while the third
+represents some other quantity. The axis plotted by Cubeview is really
+meaningful only when the third dimension is spectral (wavelength,
+frequency or radial velocity compared to a reference wavelength).
+
+Cubeview is able to read FITS files, and to interpret them correctly
+for both the now decommissioned BEAR Michelson-based spectro-imager at
+the CFHT and the image-slicer-based instrument SINFONI currently
+operated at the ESO VLT.
+
+Installation
+
+See "INSTALL" file in the source package.
+
+Invocation 
+
+- from a shell, use the "cubeview" script, with on optional argument
+  (the name of a FITS file):
+    bash$ cubeview file.fits
+  When started this way, closing the GTK control window also quits
+  Yorick. If cubeview is started in the foreground of a terminal
+  window, you may type yorick commands throughout the session, except
+  when Yorick is waiting for mouse events (selecting a spectrum and
+  the like).
+
+- from yorick:
+    > #include "cubeview.i"
+    > cubeview, "cube.fits"
+  Cubeview's GUI is GTK based. An alternative GUI written entirely in
+  Yorick is also available wen cubeview is started from yorick:
+    > cubeview, "file.fits", ui="tws"
+  When started from Yorick, closing the GTK window does not kill Yorick.
+
+Read cubeview.i for more details.
+
+Reference: http://tel.archives-ouvertes.fr/tel-00010941/

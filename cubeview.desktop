@@ -1,0 +1,10 @@
+[Desktop Entry]
+Categories=Science;Astronomy;DataVisualization;Graphics;3DGraphics;Viewer;GTK;
+Type=Application
+Comment=3D FITS data viewer for spectro-imaging
+Exec=yorick -i cubeview.i --stand-alone %F
+Icon=cubeview48
+Name=Cubeview
+GenericName=3D FITS Spectro-Imaging Data Viewer
+MimeType=image/x-fits;
+Terminal=false
