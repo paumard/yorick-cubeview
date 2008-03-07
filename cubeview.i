@@ -1,7 +1,7 @@
 /*
-  $Id: cubeview.i,v 1.1 2008-03-07 10:03:02 paumard Exp $
+   $Id: cubeview.i,v 1.2 2008-03-07 13:36:21 paumard Exp $
   
-  CUBEVIEW.I
+   CUBEVIEW.I
    Routines to visualize 3D data, particularly spectroimaging data.
 
     Copyright (C) 2003-2007  Thibaut Paumard <paumard@users.sourceforge.net>
@@ -1522,6 +1522,7 @@ func cv_suspend {
 
 */
   if (cv_stand_alone) quit;
+  cv_freemouse;
   write, "Cubeview suspended.";
   write, "Type \'cv\' to resume.";
   write, "Type \'quit\' to quit.";
@@ -1633,15 +1634,16 @@ func cubeview(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
   extern cv_ui;
   if (!is_void(ui)) cv_ui=ui;
   local slice_wid,sp_wid,cmd_wid,origin,scale,depth,overs,slbox,sltype,slpalette;
-  cv_init,data,slice_wid=slice_wid,sp_wid=sp_wid,cmd_wid=cmd_wid,origin=origin,
+  if (!is_void(data)) {
+    cv_init,data,slice_wid=slice_wid,sp_wid=sp_wid,cmd_wid=cmd_wid,origin=origin,
       scale=scale,depth=depth,overs=overs,slboxcol=slbox,zwlwise=zwlwise,
       sltype=sltype,slpalette=slpalette,slinterp=slinterp,refwl=refwl,
       waxis=waxis,faxis=faxis,vaxis=vaxis,zaxistype=zaxistype,vlsr=vlsr,
       pixel=pixel,hook=hook,spkeywords=spkeywords,postinit=postinit,
       xyaspect=xyaspect;
-
-  if (cv_ui=="gtk") cv_gtk;
-  else if (cv_ui=="tws") cv_tws;
+    if (cv_ui=="gtk") cv_gtk;
+    else if (cv_ui=="tws") cv_tws;
+  } else cv_gtk;
 }
 
 func cv_tws(graphic_windows=)
@@ -2206,7 +2208,7 @@ func cv_zoom(factor) {
         yndc_pressed=results(6);
         xndc_released=results(7);
         yndc_released=results(8);
-        system=results(9);
+        msystem=results(9);
         button=results(10);
         modifiers=results(11);
 
@@ -2263,9 +2265,9 @@ func cv_zoom(factor) {
     }
 }
 
-func cv_mouse(system, style, prompt) {
+func cv_mouse(msystem, style, prompt) {
   cv_interns.mouselock=1;
-  res=mouse(system, style, prompt);
+  res=mouse(msystem, style, prompt);
   cv_interns.mouselock=0;
   return res;
 }
