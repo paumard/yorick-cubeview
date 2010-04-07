@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # cubeview.py
-# $Id: cubeview.py,v 1.1 2008-03-07 10:03:02 paumard Exp $
+# $Id: cubeview.py,v 1.2 2010-04-07 20:26:43 paumard Exp $
 # Inspired from yao.py
 #     This file is part of Cubeview.
 #     Copyright (C) 2007  Thibaut Paumard <paumard@users.sourceforge.net>
@@ -274,6 +274,7 @@ class cubeview:
       self.glade.get_widget('slsmooth').set_text(slsmooth);
       self.glade.get_widget('overs').set_text(overs);
       self.glade.get_widget(sltype).set_active(1);
+      self.py2yo('cv_graphicwindows 1')
      
    #
    # Yorick to Python Wrapper Functions

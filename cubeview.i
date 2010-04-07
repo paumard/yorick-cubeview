@@ -1,5 +1,5 @@
 /*
-   $Id: cubeview.i,v 1.2 2008-03-07 13:36:21 paumard Exp $
+   $Id: cubeview.i,v 1.3 2010-04-07 20:26:42 paumard Exp $
   
    CUBEVIEW.I
    Routines to visualize 3D data, particularly spectroimaging data.
@@ -86,13 +86,15 @@ func cv_gtk {
 
   _pyk_proc = spawn(pyk_cmd, _pyk_callback);
 
-  if (is_void(cv_interns)) return;
+  //  if (is_void(cv_interns)) return;
 
   //  after,1,cv_gtk_init;
   
 }
 
 func cv_gtk_init {
+  extern cv_gtk_no_init,cv_nodraw;
+  cv_nodraw=1;
   if (!is_void(cv_interns)) {
     sldepth=pr1(cv_interns.depth)+"bit";
     pyk,"cv_init('"+
@@ -358,13 +360,13 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
       suffix=strpart(data,pos:);
       if (suffix==".gz") {
         system,"gzip -d < "+data+" > cubeview.tmp.fits";
-        cv_cube=fits_read("cubeview.tmp.fits",cv_fh);
+        cv_cube=double(fits_read("cubeview.tmp.fits",cv_fh));
         system,"rm -f cubeview.tmp.fits";
       } else {
-        cv_cube=fits_read(data,cv_fh);
+        cv_cube=double(fits_read(data,cv_fh));
       }
     } else {
-      cv_cube=fits_read(data,cv_fh);
+      cv_cube=double(fits_read(data,cv_fh));
     }
     BLANK = fits_get(cv_fh,"BLANK");
     if (is_numerical(BLANK)) cv_interns.blank=BLANK;
@@ -398,7 +400,7 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
     if (strtrim(CTYPE3)=="WAVE") cv_interns.zwlwise=1;
     else cv_interns.zwlwise=0;
   } else {
-    cv_cube=data;
+    cv_cube=double(data);
     cv_fh=[];
   }
   // Keywords overwritting defaults
@@ -487,8 +489,8 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
   cv_sldraw;
   limits;
   limits,square=1;
-  cv_spdraw;
-  cv_putspbox;
+  //  cv_spdraw;
+  //  cv_putspbox;
   cv_graphicwindows;
   if (!is_void(postinit)) include,postinit,1;
 }
@@ -581,6 +583,7 @@ func cv_sldraw(depth=)
      by CV_SLICE_WID).  Displays a box around the spectrum region.
 */
 {
+  if (cv_nodraw) return;
   extern cv_interns;
   cv_slwin;
   fma;
@@ -777,6 +780,7 @@ func cv_spdraw(pos)
      defining the slice on a colored background.
 */
 {
+  if (cv_nodraw) return;
   extern cv_interns;
   cv_spwin;
   fma;
@@ -1635,14 +1639,22 @@ func cubeview(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
   if (!is_void(ui)) cv_ui=ui;
   local slice_wid,sp_wid,cmd_wid,origin,scale,depth,overs,slbox,sltype,slpalette;
   if (!is_void(data)) {
+    extern cv_gtk_no_init,cv_nodraw;
+    cv_nodraw=1;
     cv_init,data,slice_wid=slice_wid,sp_wid=sp_wid,cmd_wid=cmd_wid,origin=origin,
       scale=scale,depth=depth,overs=overs,slboxcol=slbox,zwlwise=zwlwise,
       sltype=sltype,slpalette=slpalette,slinterp=slinterp,refwl=refwl,
       waxis=waxis,faxis=faxis,vaxis=vaxis,zaxistype=zaxistype,vlsr=vlsr,
       pixel=pixel,hook=hook,spkeywords=spkeywords,postinit=postinit,
       xyaspect=xyaspect;
-    if (cv_ui=="gtk") cv_gtk;
-    else if (cv_ui=="tws") cv_tws;
+    if (cv_ui=="gtk") {
+      cv_gtk_no_init=1;
+      cv_gtk;
+    } else {
+      cv_nodraw=0;
+      cv_graphicwindows;
+    }
+    if (cv_ui=="tws") cv_tws;
   } else cv_gtk;
 }
 
@@ -1681,13 +1693,15 @@ func cv_resume {
 }
 cv=cv_resume;
 
-func cv_graphicwindows(nokill=,extract=)
+func cv_graphicwindows(force,nokill=,extract=)
 /* DOCUMENT cv_graphicwindows : redraw
-
+   Argument:   if true, set cv_nodraw to 0.
    Keywords:   NOKILL:   if   set,   the   windows  are   not   killed   and
    re-initialized. EXTRACT: re-extract spectrum and slice.
  */
 {
+  extern cv_nodraw;
+  if (force) cv_nodraw=0;
     if (extract){
             extern cv_interns;
             llx=cv_interns.spbox(1);

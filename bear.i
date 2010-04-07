@@ -1,5 +1,5 @@
 /*
-    $Id: bear.i,v 1.1 2008-03-07 10:03:02 paumard Exp $
+    $Id: bear.i,v 1.2 2010-04-07 20:26:43 paumard Exp $
     
     bear.i
     This file is part of Cubeview.
@@ -76,6 +76,8 @@ func bear_faxis(fh,P=,CEN_FREQ=,FILTERLB=,FILTERUB=,FSR_OFF=,FSR_LEN=,NAXIS3=,SP
     faxis=span(fmin,fmax,FSR_LEN)(FSR_OFF+1:FSR_OFF+NAXIS3);
     //if (((floor(CEN_FREQ/dfcm)) mod 2)==0) rev=0 else rev=1; //rev is computed in cubeview for IDL, but never used: obsolete ??
 
+    if (min(faxis)==0) faxis=[];
+    
     return faxis;
 
 }
