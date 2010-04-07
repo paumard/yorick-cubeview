@@ -1,5 +1,5 @@
 /*
-   $Id: cubeview.i,v 1.3 2010-04-07 20:26:42 paumard Exp $
+   $Id: cubeview.i,v 1.4 2010-04-07 20:34:52 paumard Exp $
   
    CUBEVIEW.I
    Routines to visualize 3D data, particularly spectroimaging data.
@@ -29,11 +29,10 @@ extern cv_ui;
 */
 if (is_void(cv_ui)) cv_ui="gtk"; // or tws, or text
 
-// Standard inlude files
+// Standard include files
 #include "style.i"
 #include "spline.i"
 #include "fits.i"
-#include "string.i"
 #include "ieee.i"
 #include "gauss.i"
 #include "pathfun.i"
@@ -42,13 +41,15 @@ if (is_void(cv_ui)) cv_ui="gtk"; // or tws, or text
 // from yutils: is_numerical
 #include "plot.i"
 #include "utils.i"
-//#include "newfits.i"
-
-// bundled with cubeview
 #include "doppler.i"
 #include "tws.i"
-#include "bear.i"
 #include "graphk.i"
+
+// bundled with cubeview
+#include "bear.i"
+
+// string.i needs to be included _after_ utils.i to get he right strchr
+#include "string.i"
 
 // A few other files may be required for certain tasks:
 // Standard: fits.i, string.i, pnm.i
@@ -560,13 +561,13 @@ func cv_zpix2data(zpix)
 {
   extern cv_interns;
   //  return cv_interns.origin(3)+(zpix-1)*cv_interns.scale(3);
-  //pix=round(zpix);
+  //pix=cv_lround(zpix);
   axis=*cv_current_zaxis();
   if (zpix<1)  val=axis(1)-0.5*(axis(2)-axis(1));
   else if (zpix>dimsof(cv_cube)(4)) val=axis(0)+0.5*(axis(0)-axis(-1));
   else val=interp(axis,*cv_interns.zaxis,zpix)(1);
   return val;
-  //  return (*cv_current_zaxis())(min(max(round(zpix),0),cv_interns.data_dims(4)));
+  //  return (*cv_current_zaxis())(min(max(cv_lround(zpix),0),cv_interns.data_dims(4)));
 }
 
 func cv_zdata2pix(zdata)
@@ -750,10 +751,10 @@ func cv_spsel
           pp=[cv_xdata2pix(p(1)),cv_ydata2pix(p(2)),cv_xdata2pix(p(3)),cv_ydata2pix(p(4))];
           if (p(10) >=2 ) radius=max(sqrt(double(pp(3)-pp(1))^2+double(pp(4)-pp(2))^2),0.7);
           else radius=cv_interns.spbox(3);
-          center=round(2*p(1:2))/2.;
+          center=cv_lround(2*p(1:2))/2.;
           cv_spextract,[center(1),center(2),radius];
       } else {
-          pp=round([cv_xdata2pix(p(1)),cv_ydata2pix(p(2)),cv_xdata2pix(p(3)),cv_ydata2pix(p(4))]);
+          pp=cv_lround([cv_xdata2pix(p(1)),cv_ydata2pix(p(2)),cv_xdata2pix(p(3)),cv_ydata2pix(p(4))]);
           if (aperture_type=="rectangular") cv_spextract,[cv_xdata2pix(p(1)),cv_ydata2pix(p(2)),cv_xdata2pix(p(3)),cv_ydata2pix(p(4))];
           else if (aperture_type=="square") {
               center=pp(1:2);
@@ -836,8 +837,8 @@ func cv_putslbox(depth=)
   }
 }
 
-func round(x)
-/* DOCUMENT long=round(float)
+func cv_lround(x)
+/* DOCUMENT long=cv_lround(float)
   // from mathbast.i
   Acts as expected : return long(x+0.5*((x>0)*2-1));
 */
@@ -887,21 +888,21 @@ func cv_spextract(pos)
       }
   } else {
       if (cv_interns.aperture_type=="rectangular") {
-          llx=max(1,min(round(pos([1,3]))));
-          lly=max(1,min(round(pos([2,4]))));
-          urx=min(data_dims(2),round(max(pos([1,3]))));
-          ury=min(data_dims(3),round(max(pos([2,4]))));
+          llx=max(1,min(cv_lround(pos([1,3]))));
+          lly=max(1,min(cv_lround(pos([2,4]))));
+          urx=min(data_dims(2),cv_lround(max(pos([1,3]))));
+          ury=min(data_dims(3),cv_lround(max(pos([2,4]))));
           cv_interns.spbox=[llx,lly,urx,ury];
       } else {
           // square
-          x0=round(pos(1));
-          y0=round(pos(2));
-          radius=round(pos(3));
+          x0=cv_lround(pos(1));
+          y0=cv_lround(pos(2));
+          radius=cv_lround(pos(3));
           cv_interns.spbox=[x0,y0,radius,0];
           llx=max(1,x0-radius);
           lly=max(1,y0-radius);
-          urx=min(data_dims(2),round(x0+radius));
-          ury=min(data_dims(3),round(y0+radius));
+          urx=min(data_dims(2),cv_lround(x0+radius));
+          ury=min(data_dims(3),cv_lround(y0+radius));
       }
       if (isbig) {
           // here "valids" is sum(cv_valids(...))
@@ -994,7 +995,7 @@ func cv_slsel
       }
   p=cv_mouse(1,1,"");
   while (p(10) == 1) {
-    cv_slextract,round(cv_zdata2pix(p(1))),round(cv_zdata2pix(p(3)));
+    cv_slextract,cv_lround(cv_zdata2pix(p(1))),cv_lround(cv_zdata2pix(p(3)));
     cv_sldraw;
     cv_spdraw;
     cv_spwin;
@@ -1037,10 +1038,10 @@ func cv_cutsel
   resume;
   p=(cv_mouse(1,2,""));
   while (p(10) == 1) {
-    x0=round(cv_xdata2pix(p(1)));
-    y0=round(cv_ydata2pix(p(2)));
-    x1=round(cv_xdata2pix(p(3)));
-    y1=round(cv_ydata2pix(p(4)));    
+    x0=cv_lround(cv_xdata2pix(p(1)));
+    y0=cv_lround(cv_ydata2pix(p(2)));
+    x1=cv_lround(cv_xdata2pix(p(3)));
+    y1=cv_lround(cv_ydata2pix(p(4)));    
     if (cv_interns.sltype=="Normal") {
       cv_interns.cmin=(*cv_interns.slice)(x0,y0);
       cv_interns.cmax=(*cv_interns.slice)(x1,y1);
@@ -1111,10 +1112,10 @@ func cv_cutreg
   resume;
   p=(cv_mouse(1,1,""));
   while (p(10)==1) {
-    x0=round(cv_xdata2pix(p(1)));
-    y0=round(cv_ydata2pix(p(2)));
-    x1=round(cv_xdata2pix(p(3)));
-    y1=round(cv_ydata2pix(p(4)));
+    x0=cv_lround(cv_xdata2pix(p(1)));
+    y0=cv_lround(cv_ydata2pix(p(2)));
+    x1=cv_lround(cv_xdata2pix(p(3)));
+    y1=cv_lround(cv_ydata2pix(p(4)));
     cv_cutregonce,x0,y0,x1,y1;
     cv_slwin;
     resume;
@@ -2036,8 +2037,8 @@ func cv_oversamp(im)
   yd=xd+1;
   nx=dims(xd+1);
   ny=dims(yd+1);
-  nnx=round(fact*(nx-1)+1);
-  nny=round(fact*(ny-1)+1);
+  nnx=cv_lround(fact*(nx-1)+1);
+  nny=cv_lround(fact*(ny-1)+1);
   x=indgen(nx);
   y=indgen(ny);
   xp=span(min(x),max(x),nnx);
