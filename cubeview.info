@@ -1,0 +1,29 @@
+Package: cubeview
+Kind: package
+Version: 1.5
+Revision: 1
+Description: a 3D FITS data viewer specialized in spectro-imaging
+License: GPLv2
+Author: Thibaut Paumard
+Maintainer: Thibaut Paumard <paumard@users.sourceforge.net>
+OS: architecture independant
+Depends: yorick(>=2.1.05), yutils(>=1.3.0)
+Source: http://www.maumae.net/yorick/packages/tarballs/cubeview-%v-pkg.tgz
+Source-MD5: 
+Source-Directory: contrib/
+DocFiles: README GPL-2 cubeview.1
+Homepage: http://www.lesia.obspm.fr/~paumard/
+DescDetail: <<
+Cubeview is a 3D FITS file viewer specialized in spectro-imaging.  
+Despite this specialization, Cubeview can be used to do basic  
+visualization on any FITS file containing a 3D array. It can be used  
+as a stand-alone utility but, since it is written in Yorick, it is  
+inherently scriptable. A system of hooks allows custom actions to be  
+repeated automatically when certain events occur.
+<<
+DescUsage: <<
+See check.i for a test suite. Type 
+"yorick -i check.i" in a terminal to run it.
+<<
+DescPort: <<
+<<
