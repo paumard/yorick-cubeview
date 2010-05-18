@@ -1,5 +1,5 @@
 /*
-   $Id: cubeview.i,v 1.4 2010-04-07 20:34:52 paumard Exp $
+   $Id: cubeview.i,v 1.5 2010-05-18 00:09:47 paumard Exp $
   
    CUBEVIEW.I
    Routines to visualize 3D data, particularly spectroimaging data.
@@ -371,24 +371,46 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
     }
     BLANK = fits_get(cv_fh,"BLANK");
     if (is_numerical(BLANK)) cv_interns.blank=BLANK;
-    if (!pixel){
+    if (cv_is_osiris(cv_fh)) {
+      cv_cube=transpose(cv_cube, 0);
+      if (!pixel){
+        CRPIX1 = fits_get(cv_fh,"CRPIX2");
+        CRVAL1 = fits_get(cv_fh,"CRVAL2");
+        CDELT1 = fits_get(cv_fh,"CDELT2");
+        CRPIX2 = fits_get(cv_fh,"CRPIX3");
+        CRVAL2 = fits_get(cv_fh,"CRVAL3");
+        CDELT2 = fits_get(cv_fh,"CDELT3");
+      }
+      CRPIX3 = fits_get(cv_fh,"CRPIX1");
+      CRVAL3 = fits_get(cv_fh,"CRVAL1");
+      CDELT3 = fits_get(cv_fh,"CDELT1");
+      CUNIT3 = fits_get(cv_fh,"CUNIT1");
+      CTYPE3 = "WAVE";
+      if ( CUNIT3 == "nm" ) {
+        CRVAL3 *= 0.001;
+        CDELT3 *= 0.001;
+      }
+    } else {
+      if (!pixel){
         CRPIX1 = fits_get(cv_fh,"CRPIX1");
         CRVAL1 = fits_get(cv_fh,"CRVAL1");
         CDELT1 = fits_get(cv_fh,"CDELT1");
         CRPIX2 = fits_get(cv_fh,"CRPIX2");
         CRVAL2 = fits_get(cv_fh,"CRVAL2");
         CDELT2 = fits_get(cv_fh,"CDELT2");
+      }
+      CRPIX3 = fits_get(cv_fh,"CRPIX3");
+      CRVAL3 = fits_get(cv_fh,"CRVAL3");
+      CDELT3 = fits_get(cv_fh,"CDELT3");
+      CTYPE3 = fits_get(cv_fh,"CTYPE3");
     }
-    CRPIX3 = fits_get(cv_fh,"CRPIX3");
-    CRVAL3 = fits_get(cv_fh,"CRVAL3");
-    CDELT3 = fits_get(cv_fh,"CDELT3");
     if (is_numerical(CDELT1) && is_numerical(CRVAL1) && is_numerical(CRPIX1)) {
-        cv_interns.scale(1)=CDELT1;
-        cv_interns.origin(1)=CRVAL1-(CRPIX1-1)*CDELT1;
+      cv_interns.scale(1)=CDELT1;
+      cv_interns.origin(1)=CRVAL1-(CRPIX1-1)*CDELT1;
     }
     if (is_numerical(CDELT2) && is_numerical(CRVAL2) && is_numerical(CRPIX2)) {
-        cv_interns.scale(2)=CDELT2;
-        cv_interns.origin(2)=CRVAL2-(CRPIX2-1)*CDELT2;
+      cv_interns.scale(2)=CDELT2;
+      cv_interns.origin(2)=CRVAL2-(CRPIX2-1)*CDELT2;
     }
     if (is_numerical(CDELT3) && is_numerical(CRVAL3) && is_numerical(CRPIX3)) {
         cv_interns.scale(3)=CDELT3;
@@ -397,8 +419,7 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
         faxis=bear_faxis(cv_fh);
         cv_interns.zwlwise=0;
     }
-    CTYPE3 = fits_get(cv_fh,"CTYPE3",default="not set");
-    if (strtrim(CTYPE3)=="WAVE") cv_interns.zwlwise=1;
+    if ( CTYPE3 == "WAVE") cv_interns.zwlwise=1;
     else cv_interns.zwlwise=0;
   } else {
     cv_cube=double(data);
@@ -751,7 +772,7 @@ func cv_spsel
           pp=[cv_xdata2pix(p(1)),cv_ydata2pix(p(2)),cv_xdata2pix(p(3)),cv_ydata2pix(p(4))];
           if (p(10) >=2 ) radius=max(sqrt(double(pp(3)-pp(1))^2+double(pp(4)-pp(2))^2),0.7);
           else radius=cv_interns.spbox(3);
-          center=cv_lround(2*p(1:2))/2.;
+          center=cv_lround(2*pp(1:2))/2.;
           cv_spextract,[center(1),center(2),radius];
       } else {
           pp=cv_lround([cv_xdata2pix(p(1)),cv_ydata2pix(p(2)),cv_xdata2pix(p(3)),cv_ydata2pix(p(4))]);
@@ -2335,7 +2356,7 @@ func cv_circmas(sx,sy,x,y,r,inv=){
         sqrt((x-x0)^2+(y-y0)^2)<=r.
       - if INV is set, (MASK(x,y)==1) <=> sqrt((x-x0)^2+(y-y0)^2)>r;
 */
-xx=array(double(indgen(sx))-x,sy);
+  xx=array(double(indgen(sx))-x,sy);
   yy=transpose(array(double(indgen(sy))-y,sx),0);
   d2=xx^2+yy^2;
   if (inv) return (d2 > r^2);
@@ -2476,6 +2497,13 @@ func cv_warning(msg){
   if (cv_ui=="gtk") pyk,"warning('"+msg+"')";
   else print,msg;
 }
+
+func cv_is_osiris(fh) {
+  if (is_string(fh)) fh = fits_open(fh);
+  if (fits_get(fh, "CURRINST") == "OSIRIS") return 1;
+  return 0;
+}
+
 
 extern cv_stand_alone;
 cv_stand_alone=0;
