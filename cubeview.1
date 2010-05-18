@@ -1,4 +1,4 @@
-.\" $Id: cubeview.1,v 1.1 2008-03-07 10:03:02 paumard Exp $
+.\" $Id: cubeview.1,v 1.2 2010-05-18 17:09:57 paumard Exp $
 .\"
 .IX Title "CUBEVIEW 1"
 .TH CUBEVIEW 1 "2008\-01\-03" "" "Yorick"
@@ -6,10 +6,10 @@
 cubeview \- view 3D FITS files
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-\&\fBcubeview\fR [\fB\-\-stand\-alone\fR[=\fIstand\-alone\fR]] [\fB\-\-ui\fR=\fIui\fR] [\fIfile\fR]
+\&\fBcubeview\fR [\fB\-\-pixel\fR[=\fI0/1\fR]] [\fB\-\-stand\-alone\fR[=\fI0/1\fR]] [\fB\-\-ui\fR=\fIui\fR] [\fIfile\fR]
 .br
 or
-\&\fByorick \-i cubeview.i\fR [\fB\-\-stand\-alone\fR[=\fIstand\-alone\fR]] [\fB\-\-ui\fR=\fIui\fR] [\fIfile\fR]
+\&\fByorick \-i cubeview.i\fR [options] [\fIfile\fR]
 .br
 or from within \fIyorick\fR(1): \fBcubeview\fR,options or \fBcv_gtk\fR[,options].
 .SH "DESCRIPTION"
@@ -89,6 +89,10 @@ FWHM\fR and \fIOversampling\fR control two means of smoothing the
 displayed image for eye candy.
 .SH "OPTIONS"
 .IX Header "OPTIONS"
+.IP "\fB\-\-pixel\fR[=(false|true)]" 4
+Control whether the slice window axes are in pixels (true) or in world
+coordinates as indicated by the CDELT, CRPIX and CRVAL FITS
+cards. \-\-pixel is equivalent to \-\-pixel=true. The default is true.
 .IP "\fB\-\-stand\-alone\fR[=(false|true)]" 4
 Control whether closing the toolbox window exits Yorick. \-\-stand\-alone
 is equivalent to \-\-stand\-alone=true. This is the default for he first

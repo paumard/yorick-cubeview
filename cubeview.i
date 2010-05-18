@@ -1,5 +1,5 @@
 /*
-   $Id: cubeview.i,v 1.5 2010-05-18 00:09:47 paumard Exp $
+   $Id: cubeview.i,v 1.6 2010-05-18 17:09:57 paumard Exp $
   
    CUBEVIEW.I
    Routines to visualize 3D data, particularly spectroimaging data.
@@ -355,6 +355,7 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
   }
   // Keywords overwritting defaults
   if (!is_void(pixel)) cv_interns.pixel=pixel;
+  else pixel=cv_interns.pixel;
   if (typeof(data)=="string") {
     pos=strchr(data,'.',last=1);
     if (pos>0) {
@@ -511,6 +512,8 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
   cv_sldraw;
   limits;
   limits,square=1;
+  if (!cv_interns.pixel)
+    limits, cv_interns.slpos(max:1:3:2), cv_interns.slpos(min:1:3:2);
   //  cv_spdraw;
   //  cv_putspbox;
   cv_graphicwindows;
@@ -1563,8 +1566,9 @@ func cv_splims
 func cv_sllims
 /* DOCUMENT cv_sllims & Cubeview's "Slice limits" button
 
-     Sets  the limits  of Cubeview's  slice window  so that  the full  field is
-     viewed, with squared pixels, and east on the left.
+     Sets the limits of Cubeview's slice window so that the full field
+     is viewed, with squared pixels, and East on the left when world
+     coordinates are in use.
 */
 {
   extern cv_interns;
@@ -1585,6 +1589,7 @@ func cv_sllims
   cv_slwin;
   limits;
   limits,square=1;
+  if (!cv_interns.pixel && x1 > x0) swap, x0, x1;
   limits,x0,x1,y0,y1;
 }
 
@@ -2525,6 +2530,10 @@ if (is_void(CV_NO_AUTO) & numberof(cv_args)>=3 && anyof(basename(cv_args(3))==["
         if (key == "stand-alone") {
           if (anyof(value==["true","1","TRUE","T","yes","t"])) cv_stand_alone=1;
           else cv_stand_alone=0;
+        } else if ( key == "pixel" ) {
+          if (anyof(value==["true","1","TRUE","T","yes","t"]))
+            cv_defaults.pixel=1;
+          else cv_defaults.pixel=0;
         }
         else if (key == "ui") cv_ui=value;
       }
