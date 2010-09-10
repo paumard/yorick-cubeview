@@ -1,5 +1,5 @@
 /*
-   $Id: cubeview.i,v 1.6 2010-05-18 17:09:57 paumard Exp $
+   $Id: cubeview.i,v 1.7 2010-09-10 14:00:12 paumard Exp $
   
    CUBEVIEW.I
    Routines to visualize 3D data, particularly spectroimaging data.
@@ -362,13 +362,13 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
       suffix=strpart(data,pos:);
       if (suffix==".gz") {
         system,"gzip -d < "+data+" > cubeview.tmp.fits";
-        cv_cube=double(fits_read("cubeview.tmp.fits",cv_fh));
+        cv_cube=double(fits_read("cubeview.tmp.fits",cv_fh, hdu=cv_hdu));
         system,"rm -f cubeview.tmp.fits";
       } else {
-        cv_cube=double(fits_read(data,cv_fh));
+        cv_cube=double(fits_read(data,cv_fh, hdu=cv_hdu));
       }
     } else {
-      cv_cube=double(fits_read(data,cv_fh));
+      cv_cube=double(fits_read(data,cv_fh, hdu=cv_hdu));
     }
     BLANK = fits_get(cv_fh,"BLANK");
     if (is_numerical(BLANK)) cv_interns.blank=BLANK;
@@ -2504,14 +2504,19 @@ func cv_warning(msg){
 }
 
 func cv_is_osiris(fh) {
-  if (is_string(fh)) fh = fits_open(fh);
-  if (fits_get(fh, "CURRINST") == "OSIRIS") return 1;
+  if (is_string(fh)) pfh = fits_open(fh);
+  else {
+    pfh = _cpy(fh);
+    fits_rewind, pfh;
+  }
+  if (fits_get(pfh, "CURRINST") == "OSIRIS") return 1;
   return 0;
 }
 
 
-extern cv_stand_alone;
+extern cv_stand_alone, cv_hdu;
 cv_stand_alone=0;
+cv_hdu=1;
 
 cv_args=get_argv();
 if (is_void(CV_NO_AUTO) & numberof(cv_args)>=3 && anyof(basename(cv_args(3))==["cubeview.i","cubeview"])) {
@@ -2534,6 +2539,8 @@ if (is_void(CV_NO_AUTO) & numberof(cv_args)>=3 && anyof(basename(cv_args(3))==["
           if (anyof(value==["true","1","TRUE","T","yes","t"]))
             cv_defaults.pixel=1;
           else cv_defaults.pixel=0;
+        } else if ( key == "hdu" ) {
+          sread, format="%i", value, cv_hdu;
         }
         else if (key == "ui") cv_ui=value;
       }
