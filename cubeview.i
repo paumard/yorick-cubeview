@@ -1,5 +1,5 @@
 /*
-   $Id: cubeview.i,v 1.7 2010-09-10 14:00:12 paumard Exp $
+   $Id: cubeview.i,v 1.7 2010/09/10 14:00:12 paumard Exp $
   
    CUBEVIEW.I
    Routines to visualize 3D data, particularly spectroimaging data.
@@ -110,6 +110,7 @@ func cv_gtk_init {
       strtrim(swrite(cv_interns.overs))+
       "')\n";
   }
+  cv_nodraw=0;
 }
 
 func cv_wakeup {resume;}
@@ -1674,11 +1675,11 @@ func cubeview(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
       waxis=waxis,faxis=faxis,vaxis=vaxis,zaxistype=zaxistype,vlsr=vlsr,
       pixel=pixel,hook=hook,spkeywords=spkeywords,postinit=postinit,
       xyaspect=xyaspect;
+    cv_nodraw=0;
     if (cv_ui=="gtk") {
       cv_gtk_no_init=1;
       cv_gtk;
     } else {
-      cv_nodraw=0;
       cv_graphicwindows;
     }
     if (cv_ui=="tws") cv_tws;
