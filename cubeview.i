@@ -95,7 +95,6 @@ func cv_gtk {
 
 func cv_gtk_init {
   extern cv_gtk_no_init,cv_nodraw;
-  cv_nodraw=1;
   if (!is_void(cv_interns)) {
     sldepth=pr1(cv_interns.depth)+"bit";
     pyk,"cv_init('"+
@@ -110,7 +109,6 @@ func cv_gtk_init {
       strtrim(swrite(cv_interns.overs))+
       "')\n";
   }
-  cv_nodraw=0;
 }
 
 func cv_wakeup {resume;}
@@ -157,10 +155,12 @@ func cv_freeylimits {
 
     Normally called through cubeview's "Spectrum Y limits" button.
 */
-    cv_spwin;
-    oldlimits=limits();
-    limits;
-    limits,oldlimits(1),oldlimits(2);
+  extern cv_nodraw;
+  if (cv_nodraw) return;
+  cv_spwin;
+  oldlimits=limits();
+  limits;
+  limits,oldlimits(1),oldlimits(2);
 }
 
 
@@ -471,14 +471,8 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
   *cv_interns.vaxis=*cv_interns.vaxis+cv_interns.vlsr;
   if ((*cv_interns.waxis)(0)>(*cv_interns.waxis)(1)) cv_interns.zwlwise=1; else cv_interns.zwlwise=0;
   if (!is_void(zwlwise))  cv_interns.zwlwise =zwlwise ;
-  winkill,cv_interns.sp_wid;
-  winkill,cv_interns.slice_wid;
-  window,cv_interns.sp_wid,width=0,height=0,style="work.gs";
-  window,cv_interns.slice_wid,width=0,height=0,style="work.gs";
   cv_interns.sllims=[1,data_dims(4)];
   cv_interns.slpos=[cv_xpix2data(0.5),cv_ypix2data(0.5),cv_xpix2data(data_dims(2)+0.5),cv_ypix2data(data_dims(3)+0.5)];
-  //cv_interns.zaxis=&span(cv_zpix2data(1),cv_zpix2data(cv_interns.data_dims(4)),cv_interns.data_dims(4));
-  // valids
   if (cv_interns.xyaspect==0.) cv_interns.xyaspect=double(data_dims(2))/data_dims(3);
   if (!is_void(isbig)) {
       cv_interns.isbig=isbig;
@@ -510,14 +504,6 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
         cv_spextract,[data_dims(2)/2,data_dims(3)/2,1];
       else cv_spextract,[data_dims(2),data_dims(3),data_dims(2),data_dims(3)]/2;
   }
-  cv_sldraw;
-  limits;
-  limits,square=1;
-  if (!cv_interns.pixel)
-    limits, cv_interns.slpos(max:1:3:2), cv_interns.slpos(min:1:3:2);
-  //  cv_spdraw;
-  //  cv_putspbox;
-  cv_graphicwindows;
   if (!is_void(postinit)) include,postinit,1;
 }
 
@@ -609,6 +595,7 @@ func cv_sldraw(depth=)
      by CV_SLICE_WID).  Displays a box around the spectrum region.
 */
 {
+  extern cv_nodraw;
   if (cv_nodraw) return;
   extern cv_interns;
   cv_slwin;
@@ -1040,7 +1027,8 @@ func cv_slwin
    Switches to windows CV_INTERNS.SLICE_WID
 */
 {
-  extern cv_interns;
+  extern cv_interns, cv_nodraw;
+  if (cv_nodraw) return;
   window,cv_interns.slice_wid;
 }
 
@@ -1048,7 +1036,8 @@ func cv_spwin
 /* DOCUMENT cv_slwin Switches to windows CV_INTERNS.SP_WID
 */
 {
-  extern cv_interns;
+  extern cv_interns, cv_nodraw;
+  if (cv_nodraw) return;
   window,cv_interns.sp_wid;
 }
 
@@ -1210,10 +1199,14 @@ func cv_handler(event)
       return 2;
     }
     else if (uname=="splims") {
+      extern cv_nodraw;
+      if (cv_nodraw) return;
       cv_spwin;
       limits;
     }
     else if (uname=="cv_freeylimits") {
+      extern cv_nodraw;
+      if (cv_nodraw) return;
       cv_freeylimits;
     }
     else if (uname=="slprop") {
@@ -1472,6 +1465,8 @@ func cv_popup2_init
 }
 
 func cv_set_sptype(uname) {
+  extern cv_nodraw;
+  if (cv_nodraw) return;
   cv_spwin;
   old_limits=limits();
   lowpix=cv_zdata2pix(old_limits(1));
@@ -1563,6 +1558,8 @@ func cv_suspend {
   
 func cv_splims
 {
+  extern cv_nodraw;
+  if (cv_nodraw) return;
   cv_spwin;
   limits;
 }
@@ -1575,6 +1572,8 @@ func cv_sllims
      coordinates are in use.
 */
 {
+  extern cv_nodraw;
+  if (cv_nodraw) return;
   extern cv_interns;
   x0=cv_interns.slpos(1);
   y0=cv_interns.slpos(2);
@@ -1681,9 +1680,10 @@ func cubeview(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
     cv_nodraw=0;
     if (cv_ui=="gtk") {
       cv_gtk_no_init=1;
+      cv_nodraw=1;
       cv_gtk;
     } else {
-      cv_graphicwindows;
+      cv_graphicwindows, 1;
     }
     if (cv_ui=="tws") cv_tws;
   } else cv_gtk;
@@ -1719,8 +1719,11 @@ func cv_tws(graphic_windows=)
 }
 
 func cv_resume {
-  if (cv_ui=="gtk") cv_gtk;
-  else if (cv_ui=="tws") cv_tws;
+  if (cv_ui=="gtk") {
+    extern cv_nodraw;
+    cv_nodraw=1;
+    cv_gtk;
+  } else if (cv_ui=="tws") cv_tws;
 }
 cv=cv_resume;
 
@@ -2048,11 +2051,6 @@ func cv_rgb2indexed(image, &red, &green, &blue, size=, flip=)
   rgb= map(rgb);
   if (flip) rgb= rgb(,::-1);
 
-  // fma;
-  // limits, square=1;
-  // palette, red, green, blue;
-  // pli, rgb;
-
   return rgb;
 }
 
@@ -2241,6 +2239,8 @@ func cv_zoom(factor) {
 
    See also: limits
 */
+  extern cv_nodraw;
+  if (cv_nodraw) return;
     if (is_void(factor)) factor=1.5;
     resume;
     results=cv_mouse(1,1,"");
