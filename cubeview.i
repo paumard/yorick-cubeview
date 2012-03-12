@@ -871,7 +871,7 @@ func cv_lround(x)
   return long(x+0.5*((x>0)*2-1));
 }
 
-func cv_spextract(pos)
+func cv_spextract(pos, cube)
 /* DOCUMENT cv_spextract,corners
 
      Extracts  new  Cubeview  spectrum  (*CV_INTERNS.SPECTRUM)  by  summing  up
@@ -880,7 +880,8 @@ func cv_spextract(pos)
 */
 {
   extern cv_interns;
-  data_dims=dimsof(cv_cube);
+  if (is_void(cube)) cube=&cv_cube;
+  data_dims=dimsof(*cube);
   isbig=cv_interns.isbig;
   if (is_void(pos)) pos=cv_interns.spbox;
   if (cv_interns.aperture_type=="circular") {
@@ -894,7 +895,7 @@ func cv_spextract(pos)
       ury=min(data_dims(3),long(ceil(y0+radius)));
       mask=cv_circmas(urx-llx+1,ury-lly+1,x0-llx+1,y0-lly+1,radius);
       if (isbig) {
-          somme=cv_cube(1,1,);
+          somme=(*cube)(1,1,);
           nz=data_dims(4);
           valids=array(long,nz);
           for (z=1l;z<=nz;z++){
@@ -902,13 +903,13 @@ func cv_spextract(pos)
               valids(z)=sum(vals);
               if (valids(z)>0) {
                   ind=where(vals);
-                  somme(z)=sum((cv_cube(llx:urx,lly:ury,z))(ind));
+                  somme(z)=sum(((*cube)(llx:urx,lly:ury,z))(ind));
               } else {
                   somme(z)=0.;
               }
           }
       } else {
-          somme=(cv_cube(llx:urx,lly:ury,)*mask(,,-))(sum,sum,);
+          somme=((*cube)(llx:urx,lly:ury,)*mask(,,-))(sum,sum,);
           valids=(cv_valids(llx:urx,lly:ury,)*mask(,,-))(sum,sum,);
       }
   } else {
@@ -931,7 +932,7 @@ func cv_spextract(pos)
       }
       if (isbig) {
           // here "valids" is sum(cv_valids(...))
-          somme=cv_cube(1,1,);
+          somme=(*cube)(1,1,);
           nz=data_dims(4);
           valids=array(long,nz);
           for (z=1l;z<=nz;z++){
@@ -939,13 +940,13 @@ func cv_spextract(pos)
               valids(z)=sum(vals);
               if (valids(z)>0) {
                   ind=where(vals);
-                  somme(z)=sum(cv_cube(llx:urx,lly:ury,z)(ind));
+                  somme(z)=sum((*cube)(llx:urx,lly:ury,z)(ind));
               } else {
                   somme(z)=0.;
               }
           }
       } else {
-          somme=cv_cube(sum:llx:urx,sum:lly:ury,);
+          somme=(*cube)(sum:llx:urx,sum:lly:ury,);
           valids=cv_valids(sum:llx:urx,sum:lly:ury,);
       }
   }
@@ -953,9 +954,11 @@ func cv_spextract(pos)
   indices=where(valids==0);
   if (numberof(indices)) valids(indices)=1;
   spectrum=cv_gauss_smooth(somme/valids,cv_interns.spsmooth);
-  cv_interns.spectrum=&spectrum;
-  // note: the above is ugly when we have non-valids (set to 0).
-  cv_callhook,"cv_spextract";
+  if (cube == &cv_cube) {
+    cv_interns.spectrum=&spectrum;
+    // note: the above is ugly when we have non-valids (set to 0).
+    cv_callhook,"cv_spextract";
+  }
   return spectrum;
 }
 
