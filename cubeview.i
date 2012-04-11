@@ -2477,8 +2477,8 @@ func cv_export_misc(fname,format,what,savedata,selonly) {
 
 func cv_export_plot(fname,what,format=) {
   if (!is_void(what)) {
-    if (type=="slice") cv_slwin;
-    if (type=="spectrum") cv_spwin;
+    if (what=="slice") cv_slwin;
+    if (what=="spectrum") cv_spwin;
   }
   if (is_void(format)) {
     bname=basename(fname);
@@ -2515,6 +2515,44 @@ func cv_is_osiris(fh) {
   }
   if (fits_get(pfh, "CURRINST") == "OSIRIS") return 1;
   return 0;
+}
+
+func cubeview3(caller)
+/* DOCUMENT cubeview3, caller
+
+    This is a cubeview hook to overplot spectra extracted from two
+    supplementary cubes in addition to the main cv_cube. Use
+    cubeview3_connect to connect this hook.
+
+   SEE ALSO: cubeview, cubeview3_connect
+ */
+{
+  extern cv_interns, cube2, cube3;
+  if (caller=="cv_spdraw") {
+    plh, color="blue", cv_spextract(,&cube2), (*cv_current_zaxis());
+    plh, color="red", cv_spextract(,&cube3), (*cv_current_zaxis());
+  }
+}
+
+func cubeview3_connect(c2, c3)
+/* DOCUMENT cubeview3_connect, cube2, cube3
+         or cubeview, cube1, hook=cubeview3_connect(cube2, cube3)
+
+    Connect the cubeview3 hook to cubeview, which overplots spectra
+    extracted from CUBE2 and CUBE3 whenever cubeview redraws its
+    spectrum plot.  In the first (procedural) form, cubeview must be
+    already running.  The second (functional) form allows connecting
+    the hook directly when invoking cubeview. The three cubes must
+    have the same shape.
+     
+   SEE ALSO: cubeview, cubeview3
+ */
+{
+  extern cube2, cube3;
+  cube2 = c2;
+  cube3 = c3;
+  if (am_subroutine())  cv_interns.hook="cubeview3";
+  else return "cubeview3"; 
 }
 
 

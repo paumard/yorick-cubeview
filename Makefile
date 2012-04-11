@@ -1,10 +1,11 @@
 # $Id: Makefile,v 1.1 2008-03-07 10:03:02 paumard Exp $
 # these values filled in by    yorick -batch make.i
-Y_MAKEDIR=/usr/local/share/yorick-2.1.04
-Y_EXE=/usr/local/share/yorick-2.1.04/bin/yorick
+Y_MAKEDIR=
+Y_EXE=
 Y_EXE_PKGS=
-Y_EXE_HOME=/usr/local/share/yorick-2.1.04
-Y_EXE_SITE=/usr/local/share/yorick-2.1.04
+Y_EXE_HOME=
+Y_EXE_SITE=
+Y_HOME_PKG=
 
 # ----------------------------------------------------- optimization flags
 
@@ -72,6 +73,7 @@ DEST_BIN_DIR=$(DESTDIR)/$(BIN_DIR)
 DEST_MAN_DIR=$(DESTDIR)/$(MAN_DIR)
 DEST_PYTHON_DIR=$(DEST_Y_SITE)/python
 DEST_GLADE_DIR=$(DEST_Y_SITE)/glade
+DEST_PKG_INSTALLED_DIR=$(DEST_Y_SITE)/packages/installed
 
 install::
 	rm $(DEST_Y_HOME)/lib/cubeview.so
@@ -88,6 +90,8 @@ install::
 	mkdir -p $(DEST_MAN_DIR)/man1
 	cp cubeview.1 $(DEST_MAN_DIR)/man1
 	gzip -9 $(DEST_MAN_DIR)/man1/cubeview.1
+	mkdir -p $(DEST_PKG_INSTALLED_DIR)
+	cp cubeview.info $(DEST_PKG_INSTALLED_DIR)
 
 # simple example:
 #myfunc.o: myapi.h

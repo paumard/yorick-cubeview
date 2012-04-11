@@ -1,3 +1,21 @@
+cubeview (1.6)
+
+  * faster start-up with less window flickering
+  * new option hdu
+  * support for Keck/OSIRIS data
+  * cv_spextract is now able to extract from another cube
+  * ship the cubeview3 hook
+  * fix in plot export routine which would sometimes save the wrong plot
+  * install .info file
+
+ -- Thibaut Paumard <paumard@users.sourceforge.net>  Wed, 11 Apr 2012 19:50:33 +0100
+
+cubeview (1.5)
+
+  * don't remember :-/
+
+ -- Thibaut Paumard <paumard@users.sourceforge.net>
+	
 cubeview (1.4)
 
   * improve export capabilities: export window plot or data,
