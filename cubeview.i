@@ -62,7 +62,7 @@ if (is_void(Y_GLADE))
   Y_GLADE="./:"+Y_USER+":"+pathform(_(Y_SITES,Y_SITE)+"glade/");
 
 
-func cv_gtk {
+func cv_gtk_py {
   require,"pyk.i";
   extern _pyk_proc, _pyk_callback;
 
@@ -91,6 +91,44 @@ func cv_gtk {
 
   //  after,1,cv_gtk_init;
   
+}
+
+func cv_toolbox_state(wgd, evt, udata)
+{
+  extern cv_nodraw;
+  if (_cvgy.realized) return 0;
+  _cvgy, realize=1;
+  cv_nodraw=0;
+  gywindow, cv_interns.sp_wid,width=0,height=0,style="work.gs",
+    on_realize=cv_spdraw;
+  gywindow, cv_interns.slice_wid,width=0,height=0,style="work.gs",
+    on_realize=cv_sldraw_first;
+  return 0;
+}
+
+func cv_sldraw_first(void)
+{
+  cv_sldraw;
+  cv_sllims;
+  cv_vpaspect,cv_interns.xyaspect;
+}
+
+func cv_gtk(void)
+{
+  require, "gy.i";
+  extern _cvgy;
+  if (is_void(_cvgy)) _cvgy=save();
+  Gtk=gy.require("Gtk", "3.0");
+  noop, Gtk.init(0,);
+  save, _cvgy, builder = Gtk.Builder.new();
+  CUBEVIEW_GLADE = find_in_path("cubeview.glade",takefirst=1,path=Y_GLADE);
+  noop, _cvgy.builder.add_from_file(CUBEVIEW_GLADE);
+  gy_signal_connect, _cvgy.builder;
+  save, _cvgy, toolbox=_cvgy.builder.get_object("toolbox"), realized=0;
+  "ici";
+  //  cv_graphicwindows, 1;
+  "la";
+  gy_gtk_main, _cvgy.toolbox;
 }
 
 func cv_gtk_init {
@@ -682,6 +720,23 @@ func cv_normalslice
   cv_spdraw;
 }
 
+func cv_slextract_set_handler(xdg, evt, udata)
+{
+  gy_gtk_ywindow_mouse_handler,cv_interns.sp_wid, cv_slextract_handler;
+}
+
+func cv_slextract_handler(yid, x0, y0, x1, y1, button, flags)
+{
+  if (button != 1) {
+    gy_gtk_ywindow_mouse_handler,cv_interns.sp_wid, [];
+    return;
+  }
+  cv_slextract,cv_lround(cv_zdata2pix(x0)),cv_lround(cv_zdata2pix(x1));
+  cv_sldraw;
+  cv_spdraw;
+  gy_gtk_idleonce;
+}
+
 func cv_slextract(begin,end)
 /* DOCUMENT cv_slextract,begin,end
    
@@ -700,6 +755,8 @@ func cv_slextract(begin,end)
   data_dims=dimsof(cv_cube);
   if (is_void(begin)) begin=cv_interns.sllims(1);
   if (is_void(end)) end=cv_interns.sllims(2);
+  if (structof(begin)==double) "toto";
+  if (structof(end)==double) "toto";
   b=min(begin,end);
   e=max(begin,end);
   b=max(b,1);
@@ -1182,6 +1239,11 @@ func cv_cmd_win_init
   //if (cv_interns.sltype=="Normal") rien=tws_action(normsl)(normsl,action="Select");
   //else if (cv_interns.sltype=="3 color") rien=tws_action(sl3)(sl3,action="Select");
   cv_interns.root=root;
+}
+
+func cvgy_handler(wdg, evt, udt)
+{
+  "here";
 }
 
 func cv_handler(event)
@@ -1748,17 +1810,25 @@ func cv_graphicwindows(force,nokill=,extract=)
             cv_spextract,[llx,lly,urx,ury];
     }
     if (!nokill){
+      if (cv_ui=="gtk") {
+        gywindow, cv_interns.sp_wid,width=0,height=0,style="work.gs";//,
+          //on_realize=cv_spdraw;
+      } else {
         winkill,cv_interns.sp_wid;
         winkill,cv_interns.slice_wid;
         window,cv_interns.sp_wid,width=0,height=0,style="work.gs";
-    }
-    fma;
+      }
+    } else fma;
     cv_spdraw;
     if (!nokill){
-        window,cv_interns.slice_wid,width=0,height=0,style="work.gs";
-        cv_vpaspect,cv_interns.xyaspect;
-        fma;
-    }
+      if (cv_ui=="gtk") {
+        gywindow, cv_interns.slice_wid,width=0,height=0,style="work.gs";//,
+        on_realize=cv_sldraw;
+      } else {
+        window, cv_interns.slice_wid,width=0,height=0,style="work.gs";
+      } 
+      cv_vpaspect,cv_interns.xyaspect;
+    } else fma;
     cv_sldraw;
     if (!nokill) cv_sllims;
 }
