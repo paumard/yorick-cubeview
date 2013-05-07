@@ -124,6 +124,7 @@ func cv_gtk(void)
   CUBEVIEW_GLADE = find_in_path("cubeview.glade",takefirst=1,path=Y_GLADE);
   noop, _cvgy.builder.add_from_file(CUBEVIEW_GLADE);
   gy_signal_connect, _cvgy.builder;
+  gy_gtk_ycmd_connect, _cvgy.builder.get_object("ycmd");
   save, _cvgy, toolbox=_cvgy.builder.get_object("toolbox"), realized=0;
   "ici";
   //  cv_graphicwindows, 1;
@@ -184,7 +185,7 @@ func cv_valids(x,y,z){
 
 }
 
-func cv_freeylimits {
+func cv_freeylimits(wdg, udata) {
 /* DOCUMENT cv_freeylimits
    
     Frees  Y limits,  hence the  name...  Indeed,  calls LIMITS  to  uset every
@@ -199,6 +200,7 @@ func cv_freeylimits {
   oldlimits=limits();
   limits;
   limits,oldlimits(1),oldlimits(2);
+  if (cv_ui=="gtk") gy_gtk_idleonce;
 }
 
 
@@ -727,14 +729,79 @@ func cv_slextract_set_handler(xdg, evt, udata)
 
 func cv_slextract_handler(yid, x0, y0, x1, y1, button, flags)
 {
-  if (button != 1) {
-    gy_gtk_ywindow_mouse_handler,cv_interns.sp_wid, [];
-    return;
-  }
   cv_slextract,cv_lround(cv_zdata2pix(x0)),cv_lround(cv_zdata2pix(x1));
   cv_sldraw;
   cv_spdraw;
   gy_gtk_idleonce;
+}
+
+func cv_spextract_handler(yid, x0, y0, x1, y1, button, flags)
+{
+
+  slice_wid=cv_interns.slice_wid;
+  aperture_type=cv_interns.aperture_type;
+  if (aperture_type=="rectangular") ty=1; else ty=2;
+  window,slice_wid;
+  if (aperture_type=="circular") {
+    pp=[cv_xdata2pix(x0),cv_ydata2pix(y0),cv_xdata2pix(x1),cv_ydata2pix(y1)];
+    if (button >=2 ) radius=max(sqrt(double(pp(3)-pp(1))^2+double(pp(4)-pp(2))^2),0.7);
+    else radius=cv_interns.spbox(3);
+    center=cv_lround(2*pp(1:2))/2.;
+    cv_spextract,[center(1),center(2),radius];
+  } else {
+    pp=cv_lround([cv_xdata2pix(x0),cv_ydata2pix(y0),cv_xdata2pix(x1),cv_ydata2pix(y1)]);
+    if (aperture_type=="rectangular") cv_spextract,[cv_xdata2pix(p(1)),cv_ydata2pix(p(2)),cv_xdata2pix(p(3)),cv_ydata2pix(p(4))];
+    else if (aperture_type=="square") {
+      center=pp(1:2);
+      if (p(10) >=2 ) radius=max(abs([pp(3)-pp(1),pp(4)-pp(2)]));
+      else radius=cv_interns.spbox(3);
+      cv_spextract,[center(1),center(2),radius];
+    }
+  }
+  cv_spdraw;
+  cv_sldraw;
+  gy_gtk_idleonce;
+}
+
+func cv_slcontrast_handler(yid, x0, y0, x1, y1, button, flags)
+{
+  extern cv_interns,__cv_cutbox;
+  
+  x0=cv_lround(cv_xdata2pix(x0));
+  y0=cv_lround(cv_ydata2pix(y0));
+  x1=cv_lround(cv_xdata2pix(x1));
+  y1=cv_lround(cv_ydata2pix(y1));
+  if (button==1) {
+    cv_cutregonce, x0, y0, x1, y1;
+  } else {
+    if (cv_interns.sltype=="Normal") {
+      cv_interns.cmin=(*cv_interns.slice)(x0,y0);
+      cv_interns.cmax=(*cv_interns.slice)(x1,y1);
+    } else if (cv_interns.sltype=="3 color") {
+      cv_interns.cmin=sum((*cv_interns.slice)(,x0,y0));
+      cv_interns.cmax=sum((*cv_interns.slice)(,x1,y1));      
+    }
+    __cv_cutbox=[x0,y0,x1,y1];
+    cv_callhook,"cv_cutsel";
+    cv_sldraw;
+  }
+  gy_gtk_idleonce;
+}
+
+func cv_spwin_handler(wdg, udata)
+{
+  if (wdg.get_active()) gy_gtk_ywindow_mouse_handler,cv_interns.sp_wid, [];
+  else gy_gtk_ywindow_mouse_handler, cv_interns.sp_wid, cv_slextract_handler;
+}
+
+func cv_slwin_handler(wdg, udata)
+{
+  if (!wdg.get_active()) return;
+  id = gy.Gtk.Buildable(wdg).get_name();
+  if      (id == "slzoom")     handler = [];
+  else if (id == "spsel")      handler = cv_spextract_handler;
+  else if (id == "slcontrast") handler = cv_slcontrast_handler;
+  gy_gtk_ywindow_mouse_handler, cv_interns.slice_wid, handler;
 }
 
 func cv_slextract(begin,end)
@@ -1618,15 +1685,16 @@ func cv_suspend {
   write, "Type \'quit\' to quit.";
 }
   
-func cv_splims
+func cv_splims(wdg, udata)
 {
   extern cv_nodraw;
   if (cv_nodraw) return;
   cv_spwin;
   limits;
+  if (cv_ui=="gtk") gy_gtk_idleonce;
 }
 
-func cv_sllims
+func cv_sllims(wdg, udata)
 /* DOCUMENT cv_sllims & Cubeview's "Slice limits" button
 
      Sets the limits of Cubeview's slice window so that the full field
@@ -1656,6 +1724,7 @@ func cv_sllims
   limits,square=1;
   if (!cv_interns.pixel && x1 > x0) swap, x0, x1;
   limits,x0,x1,y0,y1;
+  if (cv_ui=="gtk") gy_gtk_idleonce;
 }
 
 /*
