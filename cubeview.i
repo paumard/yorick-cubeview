@@ -1,10 +1,8 @@
 /*
-   $Id: cubeview.i,v 1.7 2010/09/10 14:00:12 paumard Exp $
-  
    CUBEVIEW.I
    Routines to visualize 3D data, particularly spectroimaging data.
 
-    Copyright (C) 2003-2007  Thibaut Paumard <paumard@users.sourceforge.net>
+    Copyright (C) 2003-2013  Thibaut Paumard <paumard@users.sourceforge.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -53,45 +51,7 @@ if (is_void(cv_ui)) cv_ui="gtk"; // or tws, or text
 
 // A few other files may be required for certain tasks:
 // Standard: fits.i, string.i, pnm.i
-// Non standard: ytk.i, coords.i, pyk.i
-
-extern Y_PYHTON, Y_GLADE;
-if (is_void(Y_PYTHON))
-  Y_PYTHON="./:"+Y_USER+":"+pathform(_(Y_SITES,Y_SITE)+"python/");
-if (is_void(Y_GLADE))
-  Y_GLADE="./:"+Y_USER+":"+pathform(_(Y_SITES,Y_SITE)+"glade/");
-
-
-func cv_gtk_py {
-  require,"pyk.i";
-  extern _pyk_proc, _pyk_callback;
-
-  CUBEVIEW_PY = find_in_path("cubeview.py",takefirst=1,path=Y_PYTHON);
-  if (is_void(CUBEVIEW_PY)) error,"Can't find cubeview.py";
-  CUBEVIEW_GLADE = find_in_path("cubeview.glade",takefirst=1,path=Y_GLADE);
-  if (is_void(CUBEVIEW_GLADE)) error,"Can't find cubeview.glade";
-
-  streplace,CUBEVIEW_PY,strfind("~",CUBEVIEW_PY),get_env("HOME");
-  streplace,CUBEVIEW_GLADE,strfind("~",CUBEVIEW_GLADE),get_env("HOME");
-
-  
-  if (pyk_debug==[]) pyk_debug=0;
-  sleep=200;
-  default_dpi=dpi=60;
-
-  // spawn   gtk interface
-  python_exec = CUBEVIEW_PY;
-  pyk_cmd=[CUBEVIEW_PY,CUBEVIEW_GLADE];
-
-  // spawn the python process, and hook to existing _tyk_proc (see pyk.i)
-
-  _pyk_proc = spawn(pyk_cmd, _pyk_callback);
-
-  //  if (is_void(cv_interns)) return;
-
-  //  after,1,cv_gtk_init;
-  
-}
+// Non standard: gy.i, coords.i
 
 func cv_toolbox_state(wgd, evt, udata)
 {
@@ -99,10 +59,10 @@ func cv_toolbox_state(wgd, evt, udata)
   if (_cvgy.realized) return 0;
   _cvgy, realize=1;
   cv_nodraw=0;
-  gywindow, cv_interns.sp_wid,width=0,height=0,style="work.gs",
-    on_realize=cv_spdraw;
-  gywindow, cv_interns.slice_wid,width=0,height=0,style="work.gs",
-    on_realize=cv_sldraw_first;
+  //  gywindow, cv_interns.sp_wid,width=0,height=0,style="work.gs",
+  //  on_realize=cv_spdraw;
+  //gywindow, cv_interns.slice_wid,width=0,height=0,style="work.gs",
+  //  on_realize=cv_sldraw_first;
   return 0;
 }
 
@@ -116,38 +76,254 @@ func cv_sldraw_first(void)
 func cv_gtk(void)
 {
   require, "gy.i";
-  extern _cvgy;
+  extern _cvgy, cv_interns, gy_gtk_on_main_quit;
   if (is_void(_cvgy)) _cvgy=save();
+  if (is_void(cv_interns))
+    cv_interns=CV_Interns(slice_wid=cv_defaults.slice_wid,
+                          sp_wid=cv_defaults.sp_wid, cmd_wid=cv_defaults.cmd_wid,
+                          depth=cv_defaults.depth, origin=cv_defaults.origin,
+                          scale=cv_defaults.scale, overs=cv_defaults.overs,
+                          slboxcol=cv_defaults.slboxcol,zwlwise=cv_defaults.zwlwise,
+                          sltype=cv_defaults.sltype, slpalette=cv_defaults.slpalette,
+                          slinterp=cv_defaults.slinterp,refwl=cv_defaults.refwl,
+                          zaxistype=cv_defaults.zaxistype,vlsr=cv_defaults.vlsr,
+                          pixel=cv_defaults.pixel,hook=cv_defaults.hook,
+                          spkeywords=cv_defaults.spkeywords,
+                          aperture_type=cv_defaults.aperture_type,
+                          blank=cv_defaults.blank,xyaspect=cv_defaults.xyaspect);
+  
   Gtk=gy.require("Gtk", "3.0");
+  if (cv_stand_alone) {
+    gy_gtk_on_main_quit=cv_quit;
+    noop, gy.GLib.set_prgname("Cubeview");
+    noop, gy.GLib.set_application_name("Cubeview");
+  }
   noop, Gtk.init(0,);
-  save, _cvgy, builder = Gtk.Builder.new();
-  CUBEVIEW_GLADE = find_in_path("cubeview.glade",takefirst=1,path=Y_GLADE);
-  noop, _cvgy.builder.add_from_file(CUBEVIEW_GLADE);
+  gy_setlocale;
+  save, _cvgy, builder = gy_gtk_builder("cubeview.glade");
+
+  // Set widget initial values from cv_interns
+  sldepth = pr1(cv_interns.depth)+"bit";
+  noop, _cvgy.builder.get_object(cv_interns.zaxistype).set_active(1);
+  noop, _cvgy.builder.get_object(cv_interns.aperture_type).set_active(1);
+  noop, _cvgy.builder.get_object("refwl").set_value(cv_interns.refwl);
+  noop, _cvgy.builder.get_object("spsmooth").set_value(cv_interns.spsmooth);
+  noop, _cvgy.builder.get_object(sldepth).set_active(1);
+  noop, _cvgy.builder.get_object(cv_interns.sltype).set_active(1);
+  noop, _cvgy.builder.get_object("slsmooth").set_value(cv_interns.slsmooth);
+  noop, _cvgy.builder.get_object("sloversampling").set_value(cv_interns.overs);
+  
   gy_signal_connect, _cvgy.builder;
   gy_gtk_ycmd_connect, _cvgy.builder.get_object("ycmd");
+  mhbox = _cvgy.builder.get_object("ywindows");
+  yid = [];
+  if (!is_void(cv_cube)) on_realize=cv_spdraw; else on_realize=[];
+  win = gy_gtk_ywindow(yid, style="work.gs", width=450, height=450,
+                       on_realize=on_realize);
+  noop, mhbox.pack1(win, 1, 1);
+  cv_interns.sp_wid = yid;
+  yid = [];
+  if (!is_void(cv_cube)) on_realize=cv_sldraw_first; else on_realize=[];
+  win = gy_gtk_ywindow(yid, style="work.gs", width=450, height=450,
+                       on_realize=on_realize);
+  noop, mhbox.pack2(win, 1, 1);
+
+  noop, mhbox.set_size_request(900,0);
+  cv_interns.slice_wid = yid;
   save, _cvgy, toolbox=_cvgy.builder.get_object("toolbox"), realized=0;
-  "ici";
-  //  cv_graphicwindows, 1;
-  "la";
+  iconf = find_in_path("cubeview-big.png", takefirst=1, path=Y_DATA);
+  if (iconf) {
+    icon = gy.GdkPixbuf.Pixbuf.new_from_file(iconf);
+    noop, _cvgy.toolbox.set_icon(icon);
+    _cvgy, icon=icon;
+  }
   gy_gtk_main, _cvgy.toolbox;
 }
 
-func cv_gtk_init {
-  extern cv_gtk_no_init,cv_nodraw;
-  if (!is_void(cv_interns)) {
-    sldepth=pr1(cv_interns.depth)+"bit";
-    pyk,"cv_init('"+
-      cv_interns.zaxistype+"','"+
-      cv_interns.aperture_type+"','"+
-      strtrim(swrite(cv_interns.spsmooth))+"','"+
-      strtrim(swrite(cv_interns.refwl))+"','"+
-      cv_interns.sltype+"','"+
-      strpart(cv_interns.slpalette,1:-3)+"','"+
-      sldepth+"','"+
-      strtrim(swrite(cv_interns.slsmooth))+"','"+
-      strtrim(swrite(cv_interns.overs))+
-      "')\n";
+func cv_quit(void)
+{
+  winkill, cv_interns.slice_wid;
+  winkill, cv_interns.sp_wid;
+  quit;
+  error, "Error triggered to exit Cubeview in batch mode. Should not happen.";
+}
+
+func cv_open(wdg, udata) {
+  Gtk=gy.Gtk;
+  chooser = Gtk.FileChooserDialog();
+  noop, chooser.add_button(Gtk.STOCK_OPEN, Gtk.ResponseType.ok);
+  noop, chooser.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.cancel);
+  fcfc = Gtk.FileChooser(chooser);
+  noop, fcfc.set_action(Gtk.FileChooserAction.open);
+  noop, fcfc.set_do_overwrite_confirmation(1);
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[fF][iI][tT][sS]");
+  noop, filter.add_pattern("*.[fF][iI][tT]");
+  noop, filter.add_pattern("*.[fF][iI][tT][sS].gz");
+  noop, filter.add_pattern("*.[fF][iI][tT].gz");
+  noop, filter.set_name("FITS files");
+  noop, fcfc.add_filter(filter);
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*");
+  noop, filter.set_name("All files");
+  noop, fcfc.add_filter(filter);
+  noop, chooser.show_all();
+  answer = chooser.run();
+  noop,chooser.hide();
+  if (answer==gy.Gtk.ResponseType.ok) {
+    file=Gtk.FileChooser(chooser).get_filename();
+    cv_init, file, slice_wid=cv_interns.slice_wid, sp_wid=cv_interns.sp_wid;
+    cv_spdraw;
+    cv_sldraw_first;
+    gy_gtk_idleonce;
   }
+  noop, chooser.destroy();
+}
+
+func cv_save(wdg, udata) {
+  Gtk=gy.Gtk;
+  chooser = Gtk.FileChooserDialog();
+  noop, chooser.add_button(Gtk.STOCK_SAVE, Gtk.ResponseType.ok);
+  noop, chooser.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.cancel);
+  fcfc = Gtk.FileChooser(chooser);
+  noop, fcfc.set_action(Gtk.FileChooserAction.save);
+  noop, fcfc.set_do_overwrite_confirmation(1);
+  noop, fcfc.set_create_folders(1);
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[fF][iI][tT][sS]");
+  noop, filter.add_pattern("*.[fF][iI][tT]");
+  noop, filter.add_pattern("*.[fF][iI][tT][sS].gz");
+  noop, filter.add_pattern("*.[fF][iI][tT].gz");
+  noop, filter.set_name("FITS files");
+  noop, fcfc.add_filter(filter);
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*");
+  noop, filter.set_name("All files");
+  noop, fcfc.add_filter(filter);
+  noop, chooser.show_all();
+  answer = chooser.run();
+  noop,chooser.hide();
+  if (answer==gy.Gtk.ResponseType.ok) {
+    file=Gtk.FileChooser(chooser).get_filename();
+    cv_save_sel, file;
+  }
+  noop, chooser.destroy();
+}
+
+func cv_export(wdg, udata) {
+  Gtk=gy.Gtk;
+  chooser = Gtk.FileChooserDialog();
+  noop, chooser.add_button(Gtk.STOCK_SAVE, Gtk.ResponseType.ok);
+  noop, chooser.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.cancel);
+  grid = Gtk.Grid();
+  noop, grid.set_column_homogeneous(1);
+  noop, chooser.get_content_area().pack_start(grid, 0,0,0);
+  
+  slice = Gtk.RadioButton.new_with_label(,"Slice");
+  spectrum = Gtk.RadioButton.new_with_label(slice.get_group(),"Spectrum");
+  noop, grid.attach(slice, 1, 1, 1, 1);
+  noop, grid.attach(spectrum, 1, 2, 1, 1);
+  
+  data = Gtk.RadioButton.new_with_label(,"Data");
+  plot = Gtk.RadioButton.new_with_label(data.get_group(),"Plot");
+  noop, grid.attach(data, 2, 1, 1, 1);
+  noop, grid.attach(plot, 2, 2, 1, 1);
+
+  sel = Gtk.CheckButton.new_with_label("Selection only");
+  noop, grid.attach(sel, 3, 1, 1, 1);
+  
+  fcfc = Gtk.FileChooser(chooser);
+  noop, fcfc.set_action(Gtk.FileChooserAction.save);
+  noop, fcfc.set_do_overwrite_confirmation(1);
+  noop, fcfc.set_create_folders(1);
+
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[fF][iI][tT][sS]");
+  noop, filter.add_pattern("*.[fF][iI][tT]");
+  noop, filter.add_pattern("*.[tT][xX][tT]");
+  noop, filter.add_pattern("*.[cC][sS][vV]");
+  noop, filter.add_pattern("*.[dD][aA][tT]");
+  noop, filter.add_pattern("*.[pP][dD][fF]");
+  noop, filter.add_pattern("*.[eE][pP][sS]");
+  noop, filter.add_pattern("*.[jJ][pP][eE][gG]");
+  noop, filter.add_pattern("*.[jJ][pP][gG]");
+  noop, filter.add_pattern("*.[jJ][fF][iI][fF]");
+  noop, filter.add_pattern("*.[pP][nN][gG]");
+  noop, filter.add_pattern("*.[pP][nN][mM]");
+  noop, filter.add_pattern("*.[pP][pP][mM]");
+  noop, filter.set_name("All supported files");
+  noop, fcfc.add_filter(filter);
+
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[fF][iI][tT][sS]");
+  noop, filter.add_pattern("*.[fF][iI][tT]");
+  noop, filter.set_name("FITS files");
+  noop, fcfc.add_filter(filter);
+
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[tT][xX][tT]");
+  noop, filter.add_pattern("*.[cC][sS][vV]");
+  noop, filter.add_pattern("*.[dD][aA][tT]");
+  noop, filter.set_name("Text files");
+  noop, fcfc.add_filter(filter);
+
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[pP][dD][fF]");
+  noop, filter.set_name("PDF documents");
+  noop, fcfc.add_filter(filter);
+
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[eE][pP][sS]");
+  noop, filter.set_name("EPS documents");
+  noop, fcfc.add_filter(filter);
+
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[jJ][pP][eE][gG]");
+  noop, filter.add_pattern("*.[jJ][pP][gG]");
+  noop, filter.add_pattern("*.[jJ][fF][iI][fF]");
+  noop, filter.set_name("JPEG images");
+  noop, fcfc.add_filter(filter);
+
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[pP][nN][gG]");
+  noop, filter.set_name("PNG images");
+  noop, fcfc.add_filter(filter);
+
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*.[pP][nN][mM]");
+  noop, filter.add_pattern("*.[pP][pP][mM]");
+  noop, filter.set_name("PNM images");
+  noop, fcfc.add_filter(filter);
+
+  filter = Gtk.FileFilter();
+  noop, filter.add_pattern("*");
+  noop, filter.set_name("All files");
+  noop, fcfc.add_filter(filter);
+  
+  noop, chooser.show_all();
+  answer = chooser.run();
+  noop,chooser.hide();
+  if (answer==gy.Gtk.ResponseType.ok) {
+    file=Gtk.FileChooser(chooser).get_filename();
+    savedata = data.get_active();
+    if (slice.get_active()) what="slice";
+    selection=sel.get_active();
+    cv_export_misc, file, [], what, savedata, selection;
+  }
+  noop, chooser.destroy();
+}
+
+func cv_about(wdg, udata)
+{
+  Gtk=gy.require("Gtk", "3.0");
+  dialog = Gtk.AboutDialog();
+  noop, dialog.set_program_name("Cubeview");
+  noop, dialog.set_version("2.0");
+  noop, dialog.set_logo(icon);
+  noop, dialog.set_copyright("Copyright © 2003-2013 Thibaut Paumard");
+  noop, dialog.set_license_type(Gtk.License.gpl_2_0);
+  noop, dialog.run();
+  noop, dialog.destroy();
 }
 
 func cv_wakeup {resume;}
@@ -375,7 +551,7 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
 */
 {
   local slice_wid,sp_wid,cmd_wid,origin,scale,depth,overs,slbox,sltype,slpalette;
-  extern cv_interns,cv_defaults,cv_cube,cv_valids;
+  extern cv_interns,cv_defaults,cv_cube,cv_valids, __cv_palette;
   cv_interns=CV_Interns(slice_wid=cv_defaults.slice_wid,
                         sp_wid=cv_defaults.sp_wid, cmd_wid=cv_defaults.cmd_wid,
                         depth=cv_defaults.depth, origin=cv_defaults.origin,
@@ -479,6 +655,7 @@ func cv_init(data,slice_wid=,sp_wid=,cmd_wid=,origin=,scale=,depth=,overs=,
   if (!is_void(slboxcol))  cv_interns.slboxcol =slboxcol ;
   if (!is_void(sltype))    cv_interns.sltype   =sltype   ;
   if (!is_void(slpalette)) cv_interns.slpalette=slpalette  ;
+  __cv_palette=closure(palette, cv_interns.slpalette);
   if (!is_void(slinterp))  cv_interns.slinterp =slinterp  ;
   if (!is_void(zaxistype)) cv_interns.zaxistype=zaxistype;
   if (!is_void(refwl))     cv_interns.refwl    =refwl;
@@ -715,14 +892,16 @@ func cv_normalslice
   cv_interns.sltype="Normal";
   cv_slextract;
   cv_slwin;
-  palette,cv_interns.slpalette;
+  __cv_palette;
+  //palette,cv_interns.slpalette;
   cv_cutregonce,1,1,0,0;
   cv_spwin;
   //palette,cv_interns.slpalette;
   cv_spdraw;
+  if (cv_ui=="gtk") noop, _cvgy.builder.get_object("Normal").set_active(1);
 }
 
-func cv_slextract_set_handler(xdg, evt, udata)
+func cv_slextract_set_handler(wdg, evt, udata)
 {
   gy_gtk_ywindow_mouse_handler,cv_interns.sp_wid, cv_slextract_handler;
 }
@@ -750,10 +929,10 @@ func cv_spextract_handler(yid, x0, y0, x1, y1, button, flags)
     cv_spextract,[center(1),center(2),radius];
   } else {
     pp=cv_lround([cv_xdata2pix(x0),cv_ydata2pix(y0),cv_xdata2pix(x1),cv_ydata2pix(y1)]);
-    if (aperture_type=="rectangular") cv_spextract,[cv_xdata2pix(p(1)),cv_ydata2pix(p(2)),cv_xdata2pix(p(3)),cv_ydata2pix(p(4))];
+    if (aperture_type=="rectangular") cv_spextract,[cv_xdata2pix(x0),cv_ydata2pix(y0),cv_xdata2pix(x1),cv_ydata2pix(y1)];
     else if (aperture_type=="square") {
       center=pp(1:2);
-      if (p(10) >=2 ) radius=max(abs([pp(3)-pp(1),pp(4)-pp(2)]));
+      if (button >=2 ) radius=max(abs([pp(3)-pp(1),pp(4)-pp(2)]));
       else radius=cv_interns.spbox(3);
       cv_spextract,[center(1),center(2),radius];
     }
@@ -792,6 +971,12 @@ func cv_spwin_handler(wdg, udata)
 {
   if (wdg.get_active()) gy_gtk_ywindow_mouse_handler,cv_interns.sp_wid, [];
   else gy_gtk_ywindow_mouse_handler, cv_interns.sp_wid, cv_slextract_handler;
+}
+
+func cv_sltype_handler(wdg, udata)
+{
+  if (wdg.get_active()) cv_normalslice;
+  else cv_3colslice;
 }
 
 func cv_slwin_handler(wdg, udata)
@@ -1454,8 +1639,12 @@ func cv_sltype(name)
     
 }
 
-func cv_depth(name)
+func cv_depth(name, udata)
 {
+  if (!is_array(name)) {
+    if (!name.get_active()) return;
+    name = gy.Gtk.Buildable(name).get_name();
+  }
   if (name=="8bit") cv_interns.depth=8;
   else if (name=="24bit") cv_interns.depth=24;
   else error,name+" is not a valid depth";
@@ -1463,28 +1652,35 @@ func cv_depth(name)
    
 }
 
-func cv_set_refwl(value)
+func cv_set_refwl(value, udata)
 {
+  if (!is_array(value)) {
+    value = value.get_value();
+  }
   cv_newrefwl,double(value);
   cv_spdraw;
 }
 
 
-func cv_set_overs(value)
+func cv_set_overs(value, udata)
 {
+  if (!is_array(value)) value = value.get_value();
+  if (value == 0.) value = 1.;
   cv_interns.overs=double(value);
   cv_sldraw;
 }
 
-func cv_set_slsmooth(value)
+func cv_set_slsmooth(value, udata)
 {
+  if (!is_array(value)) value = value.get_value();
   cv_interns.slsmooth=double(value);
   cv_slextract;
   cv_sldraw;
 }
 
-func cv_set_spsmooth(value)
+func cv_set_spsmooth(value, udata)
 {
+  if (!is_array(value)) value = value.get_value();
   cv_interns.spsmooth=double(value);
   cv_spextract;
   cv_spdraw;
@@ -1494,6 +1690,17 @@ func cv_set_palette(name,no_update)
 {
   cv_interns.slpalette=name+".gp";
   if (!no_update) cv_normalslice;
+}
+
+func cv_gycmap_callback(cmd, map) {
+  extern __cv_palette;
+  __cv_palette=closure(cmd, map);
+  if (!no_update) cv_normalslice;
+}
+
+func cv_gycmap(wdg, udata) {
+  cv_slwin;
+  gycmap, cv_gycmap_callback;
 }
 
 func cv_popuphandler(event)
@@ -1593,7 +1800,12 @@ func cv_popup2_init
   cv_interns.popup=root;
 }
 
-func cv_set_sptype(uname) {
+func cv_set_sptype(uname, udata) {
+  if (!is_string(uname)) {
+    // called as Gtk handler
+    if (!uname.get_active()) return;
+    uname=gy.Gtk.Buildable(uname).get_name();
+  }
   extern cv_nodraw;
   if (cv_nodraw) return;
   cv_spwin;
@@ -1607,7 +1819,12 @@ func cv_set_sptype(uname) {
   cv_spdraw;
 }
 
-func cv_set_aperture(uname) {
+func cv_set_aperture(uname, udata) {
+  if (!is_string(uname)) {
+    // called as Gtk handler
+    if (!uname.get_active()) return;
+    uname=gy.Gtk.Buildable(uname).get_name();
+  }
   old_type=cv_interns.aperture_type;
   old_box=cv_interns.spbox;
   if (old_type==uname) return;
@@ -1672,14 +1889,17 @@ func cv_help
   help,cubeview;
 }
 
-func cv_suspend {
+func cv_suspend(wdg, udata) {
 /* DOCUMENT Cubeview SUSPEND button.
 
   Click button to suspend Cubeview. You can resume afeterwards using CV_RESUME.
 
 */
-  if (cv_stand_alone) quit;
-  cv_freemouse;
+  if (cv_ui=="gtk") gy_gtk_suspend, _cvgy.toolbox;
+  else {
+    if (cv_stand_alone) quit;
+    cv_freemouse;
+  }
   write, "Cubeview suspended.";
   write, "Type \'cv\' to resume.";
   write, "Type \'quit\' to quit.";
@@ -2519,6 +2739,18 @@ func cv_freemouse {
 }
 
 func cv_export_misc(fname,format,what,savedata,selonly) {
+  if (is_void(format)) {
+    bname=basename(fname);
+    ext=pathsplit(bname,delim=".");
+    if (numberof(ext)==1) {
+      cv_warning,"Export failed: format not specified.";
+      return;
+    }
+    format=strcase(1,ext(0));
+    if (anyof(format==["TXT", "DAT", "CSV"])) format="ASCII";
+    if (anyof(format==["JPG", "JFIF"])) format="JPEG";
+    if (anyof(format==["PPM"])) format="PNM";
+  }
   if (savedata) {
     if (what=="slice") {
       slice=*cv_interns.slice;
@@ -2642,8 +2874,8 @@ func cv_unkown_format(fname){
 }
 
 func cv_warning(msg){
-  if (cv_ui=="gtk") pyk,"warning('"+msg+"')";
-  else print,msg;
+  if (cv_ui=="gtk") gyerror, msg;
+  else print, msg;
 }
 
 func cv_is_osiris(fh) {
@@ -2727,6 +2959,7 @@ if (is_void(CV_NO_AUTO) & numberof(cv_args)>=3 && anyof(basename(cv_args(3))==["
       }
     }
   }
+  if (cv_stand_alone) batch, 1;
   if (!is_void(cv_filename)) cubeview,cv_filename;
   else cv_gtk;
 }
