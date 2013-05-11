@@ -53,6 +53,8 @@ if (is_void(cv_ui)) cv_ui="gtk"; // or tws, or text
 // Standard: fits.i, string.i, pnm.i
 // Non standard: gy.i, coords.i
 
+CUBEVIEW_VERSION="2.0~git";
+
 func cv_toolbox_state(wgd, evt, udata)
 {
   extern cv_nodraw;
@@ -318,7 +320,7 @@ func cv_about(wdg, udata)
   Gtk=gy.require("Gtk", "3.0");
   dialog = Gtk.AboutDialog();
   noop, dialog.set_program_name("Cubeview");
-  noop, dialog.set_version("2.0");
+  noop, dialog.set_version(CUBEVIEW_VERSION);
   noop, dialog.set_logo(icon);
   noop, dialog.set_copyright("Copyright © 2003-2013 Thibaut Paumard");
   noop, dialog.set_license_type(Gtk.License.gpl_2_0);

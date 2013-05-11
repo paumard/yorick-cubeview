@@ -71,7 +71,7 @@ BIN_DIR=$(Y_HOME)/bin
 MAN_DIR=$(Y_SITE)/man
 DEST_BIN_DIR=$(DESTDIR)/$(BIN_DIR)
 DEST_MAN_DIR=$(DESTDIR)/$(MAN_DIR)
-DEST_PYTHON_DIR=$(DEST_Y_SITE)/python
+DEST_DATA_DIR=$(DEST_Y_SITE)/data
 DEST_GLADE_DIR=$(DEST_Y_SITE)/glade
 DEST_PKG_INSTALLED_DIR=$(DEST_Y_SITE)/packages/installed
 
@@ -82,9 +82,8 @@ install::
 	mkdir -p $(DEST_BIN_DIR)
 	cp cubeview $(DEST_BIN_DIR)
 	chmod a+x $(DEST_BIN_DIR)/cubeview	
-	mkdir -p $(DEST_PYTHON_DIR)
-	cp cubeview.py $(DEST_PYTHON_DIR)
-	chmod a+x $(DEST_PYTHON_DIR)/cubeview.py
+	mkdir -p $(DEST_DATA_DIR)
+	cp cubeview-big.png $(DEST_DATA_DIR)
 	mkdir -p $(DEST_GLADE_DIR)
 	cp cubeview.glade $(DEST_GLADE_DIR)
 	mkdir -p $(DEST_MAN_DIR)/man1
