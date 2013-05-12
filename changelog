@@ -1,3 +1,8 @@
+cubeview (2.0, in prep.)
+  * moved from pyk (python based) to gy
+
+ -- Thibaut Paumard <paumard@users.sourceforge.net>  Sun, 12 May 2013 10:10:09 +0200
+
 cubeview (1.6)
 
   * faster start-up with less window flickering
