@@ -116,6 +116,7 @@ func cv_gtk(void)
   noop, _cvgy.builder.get_object("sloversampling").set_value(cv_interns.overs);
   
   gy_signal_connect, _cvgy.builder;
+  
   gy_gtk_ycmd_connect, _cvgy.builder.get_object("ycmd");
   mhbox = _cvgy.builder.get_object("ywindows");
   yid = [];
@@ -139,6 +140,10 @@ func cv_gtk(void)
     noop, _cvgy.toolbox.set_icon(icon);
     _cvgy, icon=icon;
   }
+
+  noop, _cvgy.builder.get_object("slsel").set_active(1);
+  noop, _cvgy.builder.get_object("spsel").set_active(1);
+
   gy_gtk_main, _cvgy.toolbox;
 }
 

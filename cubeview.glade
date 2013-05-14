@@ -229,7 +229,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkRadioButton" id="slslice">
+                                  <object class="GtkRadioButton" id="slsel">
                                     <property name="label" translatable="yes">Select slice</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="visible">True</property>
