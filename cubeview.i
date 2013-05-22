@@ -51,7 +51,7 @@ if (is_void(cv_ui)) cv_ui="gtk"; // or tws, or text
 
 // A few other files may be required for certain tasks:
 // Standard: fits.i, string.i, pnm.i
-// Non standard: gy.i, coords.i
+// Non standard: gy_gtk.i, coords.i
 
 CUBEVIEW_VERSION="2.0~git";
 
@@ -77,7 +77,7 @@ func cv_sldraw_first(void)
 
 func cv_gtk(void)
 {
-  require, "gy.i";
+  require, "gy_gtk.i";
   extern _cvgy, cv_interns, gy_gtk_on_main_quit;
   if (is_void(_cvgy)) _cvgy=save();
   if (is_void(cv_interns))
