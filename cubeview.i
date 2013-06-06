@@ -122,13 +122,13 @@ func cv_gtk(void)
   yid = [];
   if (!is_void(cv_cube)) on_realize=cv_spdraw; else on_realize=[];
   win = gy_gtk_ywindow(yid, style="work.gs", width=450, height=450,
-                       on_realize=on_realize);
+                       on_realize=on_realize, grab=1);
   noop, mhbox.pack1(win, 1, 1);
   cv_interns.sp_wid = yid;
   yid = [];
   if (!is_void(cv_cube)) on_realize=cv_sldraw_first; else on_realize=[];
   win = gy_gtk_ywindow(yid, style="work.gs", width=450, height=450,
-                       on_realize=on_realize);
+                       on_realize=on_realize, grab=1);
   noop, mhbox.pack2(win, 1, 1);
 
   noop, mhbox.set_size_request(900,0);
@@ -182,7 +182,6 @@ func cv_open(wdg, udata) {
     cv_init, file, slice_wid=cv_interns.slice_wid, sp_wid=cv_interns.sp_wid;
     cv_spdraw;
     cv_sldraw_first;
-    gy_gtk_idleonce;
   }
   noop, chooser.destroy();
 }
@@ -383,7 +382,6 @@ func cv_freeylimits(wdg, udata) {
   oldlimits=limits();
   limits;
   limits,oldlimits(1),oldlimits(2);
-  if (cv_ui=="gtk") gy_gtk_idleonce;
 }
 
 
@@ -918,7 +916,6 @@ func cv_slextract_handler(yid, x0, y0, x1, y1, button, flags)
   cv_slextract,cv_lround(cv_zdata2pix(x0)),cv_lround(cv_zdata2pix(x1));
   cv_sldraw;
   cv_spdraw;
-  gy_gtk_idleonce;
 }
 
 func cv_spextract_handler(yid, x0, y0, x1, y1, button, flags)
@@ -946,7 +943,6 @@ func cv_spextract_handler(yid, x0, y0, x1, y1, button, flags)
   }
   cv_spdraw;
   cv_sldraw;
-  gy_gtk_idleonce;
 }
 
 func cv_slcontrast_handler(yid, x0, y0, x1, y1, button, flags)
@@ -971,7 +967,6 @@ func cv_slcontrast_handler(yid, x0, y0, x1, y1, button, flags)
     cv_callhook,"cv_cutsel";
     cv_sldraw;
   }
-  gy_gtk_idleonce;
 }
 
 func cv_spwin_handler(wdg, udata)
@@ -1918,7 +1913,6 @@ func cv_splims(wdg, udata)
   if (cv_nodraw) return;
   cv_spwin;
   limits;
-  if (cv_ui=="gtk") gy_gtk_idleonce;
 }
 
 func cv_sllims(wdg, udata)
@@ -1951,7 +1945,6 @@ func cv_sllims(wdg, udata)
   limits,square=1;
   if (!cv_interns.pixel && x1 > x0) swap, x0, x1;
   limits,x0,x1,y0,y1;
-  if (cv_ui=="gtk") gy_gtk_idleonce;
 }
 
 /*
