@@ -94,14 +94,6 @@ func cv_gtk(void)
                           aperture_type=cv_defaults.aperture_type,
                           blank=cv_defaults.blank,xyaspect=cv_defaults.xyaspect);
   
-  Gtk=gy.require("Gtk", "3.0");
-  if (cv_stand_alone) {
-    gy_gtk_on_main_quit=cv_quit;
-    noop, gy.GLib.set_prgname("Cubeview");
-    noop, gy.GLib.set_application_name("Cubeview");
-  }
-  noop, Gtk.init(0,);
-  gy_setlocale;
   save, _cvgy, builder = gy_gtk_builder("cubeview.glade");
 
   // Set widget initial values from cv_interns
@@ -136,7 +128,7 @@ func cv_gtk(void)
   save, _cvgy, toolbox=_cvgy.builder.get_object("toolbox"), realized=0;
   iconf = find_in_path("cubeview-big.png", takefirst=1, path=Y_DATA);
   if (iconf) {
-    icon = gy.GdkPixbuf.Pixbuf.new_from_file(iconf);
+    icon = GdkPixbuf.Pixbuf.new_from_file(iconf);
     noop, _cvgy.toolbox.set_icon(icon);
     _cvgy, icon=icon;
   }
@@ -144,7 +136,7 @@ func cv_gtk(void)
   noop, _cvgy.builder.get_object("slsel").set_active(1);
   noop, _cvgy.builder.get_object("spsel").set_active(1);
 
-  gy_gtk_main, _cvgy.toolbox;
+  noop, _cvgy.toolbox.show_all();
 }
 
 func cv_quit(void)
@@ -156,7 +148,6 @@ func cv_quit(void)
 }
 
 func cv_open(wdg, udata) {
-  Gtk=gy.Gtk;
   chooser = Gtk.FileChooserDialog();
   noop, chooser.add_button(Gtk.STOCK_OPEN, Gtk.ResponseType.ok);
   noop, chooser.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.cancel);
@@ -177,7 +168,7 @@ func cv_open(wdg, udata) {
   noop, chooser.show_all();
   answer = chooser.run();
   noop,chooser.hide();
-  if (answer==gy.Gtk.ResponseType.ok) {
+  if (answer==Gtk.ResponseType.ok) {
     file=Gtk.FileChooser(chooser).get_filename();
     cv_init, file, slice_wid=cv_interns.slice_wid, sp_wid=cv_interns.sp_wid;
     cv_spdraw;
@@ -187,7 +178,6 @@ func cv_open(wdg, udata) {
 }
 
 func cv_save(wdg, udata) {
-  Gtk=gy.Gtk;
   chooser = Gtk.FileChooserDialog();
   noop, chooser.add_button(Gtk.STOCK_SAVE, Gtk.ResponseType.ok);
   noop, chooser.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.cancel);
@@ -209,7 +199,7 @@ func cv_save(wdg, udata) {
   noop, chooser.show_all();
   answer = chooser.run();
   noop,chooser.hide();
-  if (answer==gy.Gtk.ResponseType.ok) {
+  if (answer==Gtk.ResponseType.ok) {
     file=Gtk.FileChooser(chooser).get_filename();
     cv_save_sel, file;
   }
@@ -217,7 +207,6 @@ func cv_save(wdg, udata) {
 }
 
 func cv_export(wdg, udata) {
-  Gtk=gy.Gtk;
   chooser = Gtk.FileChooserDialog();
   noop, chooser.add_button(Gtk.STOCK_SAVE, Gtk.ResponseType.ok);
   noop, chooser.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.cancel);
@@ -309,7 +298,7 @@ func cv_export(wdg, udata) {
   noop, chooser.show_all();
   answer = chooser.run();
   noop,chooser.hide();
-  if (answer==gy.Gtk.ResponseType.ok) {
+  if (answer==Gtk.ResponseType.ok) {
     file=Gtk.FileChooser(chooser).get_filename();
     savedata = data.get_active();
     if (slice.get_active()) what="slice";
@@ -321,7 +310,6 @@ func cv_export(wdg, udata) {
 
 func cv_about(wdg, udata)
 {
-  Gtk=gy.require("Gtk", "3.0");
   dialog = Gtk.AboutDialog();
   noop, dialog.set_program_name("Cubeview");
   noop, dialog.set_version(CUBEVIEW_VERSION);
@@ -984,7 +972,7 @@ func cv_sltype_handler(wdg, udata)
 func cv_slwin_handler(wdg, udata)
 {
   if (!wdg.get_active()) return;
-  id = gy.Gtk.Buildable(wdg).get_name();
+  id = Gtk.Buildable(wdg).get_name();
   if      (id == "slzoom")     handler = [];
   else if (id == "spsel")      handler = cv_spextract_handler;
   else if (id == "slcontrast") handler = cv_slcontrast_handler;
@@ -1645,7 +1633,7 @@ func cv_depth(name, udata)
 {
   if (!is_array(name)) {
     if (!name.get_active()) return;
-    name = gy.Gtk.Buildable(name).get_name();
+    name = Gtk.Buildable(name).get_name();
   }
   if (name=="8bit") cv_interns.depth=8;
   else if (name=="24bit") cv_interns.depth=24;
@@ -1806,7 +1794,7 @@ func cv_set_sptype(uname, udata) {
   if (!is_string(uname)) {
     // called as Gtk handler
     if (!uname.get_active()) return;
-    uname=gy.Gtk.Buildable(uname).get_name();
+    uname=Gtk.Buildable(uname).get_name();
   }
   extern cv_nodraw;
   if (cv_nodraw) return;
@@ -1825,7 +1813,7 @@ func cv_set_aperture(uname, udata) {
   if (!is_string(uname)) {
     // called as Gtk handler
     if (!uname.get_active()) return;
-    uname=gy.Gtk.Buildable(uname).get_name();
+    uname=Gtk.Buildable(uname).get_name();
   }
   old_type=cv_interns.aperture_type;
   old_box=cv_interns.spbox;
@@ -1891,17 +1879,15 @@ func cv_help
   help,cubeview;
 }
 
-func cv_suspend(wdg, udata) {
+func cv_suspend(wdg, evt, udata) {
 /* DOCUMENT Cubeview SUSPEND button.
 
   Click button to suspend Cubeview. You can resume afeterwards using CV_RESUME.
 
 */
+  if (cv_stand_alone) quit;
   if (cv_ui=="gtk") gy_gtk_suspend, _cvgy.toolbox;
-  else {
-    if (cv_stand_alone) quit;
-    cv_freemouse;
-  }
+  else cv_freemouse;
   write, "Cubeview suspended.";
   write, "Type \'cv\' to resume.";
   write, "Type \'quit\' to quit.";
@@ -2932,6 +2918,15 @@ cv_stand_alone=0;
 cv_hdu=1;
 
 cv_args=get_argv();
+
+func __cubeview_before_init
+{
+  if (cv_stand_alone) {
+    noop, GLib.set_prgname("Cubeview");
+    noop, GLib.set_application_name("Cubeview");
+  }
+}
+
 if (is_void(CV_NO_AUTO) & numberof(cv_args)>=3 && anyof(basename(cv_args(3))==["cubeview.i","cubeview"])) {
   if (numberof(cv_args)>3) {
     cv_args=cv_args(4:);
@@ -2959,7 +2954,10 @@ if (is_void(CV_NO_AUTO) & numberof(cv_args)>=3 && anyof(basename(cv_args(3))==["
       }
     }
   }
-  if (cv_stand_alone) batch, 1;
+  if (cv_stand_alone) {
+    gy_gtk_before_init = __cubeview_before_init;
+    batch, 1;
+  }
   if (!is_void(cv_filename)) cubeview,cv_filename;
   else cv_gtk;
 }
