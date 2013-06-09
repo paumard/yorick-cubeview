@@ -3,8 +3,7 @@ $Id: INSTALL,v 1.1 2008-03-07 10:03:02 paumard Exp $
         --== Cubeview for Yorick installation instructions==--
 
 I) Install necessary and recommended dependencies
- 1) yorick
- 2) yorick-yutils, python, pygtk, libglade
+ yorick, yorick-yutils, yorick-gy, gtk3
 II) Copy cubeview's files to the right location
  1) system-wide installation
  2) single-user installation
@@ -13,27 +12,24 @@ II) Copy cubeview's files to the right location
 
 I) Install necessary and recommended dependencies
 
- 1) yorick
+Cubeview may be packaged for your GNU/Linux distribution. Else:
 
-Cubeview is based on Yorick, an interpreted computing laguage. You
-will need a version more recent than Dec, 20th, 2007 (the first stable
-version compatible with cubeview is 2.1.05). Slightly omder versions
-might do if you don't plan on using the GTK user interface. As of
-writing, you almost certainly need to get the unstable tree from CVS:
-see http://yorick.sourceforge.net
+Yorick:
+https://github.com/dhmunro/yorick
 
- 2) yorick-yutils, python, pygtk, libglade
+yorick-yutils:
+https://github.com/frigaut/yorick-yutils
 
-The preferred way to use Cubeview is through it's GTK interface. This
-interface is build using PyGTK, a Python module which depends on
-Python and libglade. In addition, bindings between Yorick and Python
-are defined in the yorick-yutils package. You need version 1.3 or
-above of yorick-yutils.
+yorick-gy:
+https://github.com/paumard/yorick-gy
+
+Gtk+ 3:
+http://www.gtk.org/
 
 II) Copy cubeview's files to the right location
 
  In short:
-   yorick -batch make.i
+   ./configure
    make [DEST_Y_HOME=... DEST_Y_SITE=...] install
 
  1) system-wide installation
@@ -74,7 +70,6 @@ II) Copy cubeview's files to the right location
 
    The files will be installed as follows:
     $(DEST_Y_SITE)/i:       *.i except check.i and cubeview_start.i;
-    $(DEST_Y_SITE)/python:  cubeview.py (chmod a+x);
     $(DEST_Y_SITE)/glade:   cubeview.glade;
     $(DEST_Y_HOME)/i-start: cubeview_start.i
     $(DEST_BIN_DIR):        cubeview (chmod a+x);
@@ -91,7 +86,7 @@ a user's home directory. See the "add_y_home" function in pathfun.i
    ~/Yorick/, ~/yorick/ or ~/.yorick/, whichever suites your taste
    better. It will henceforth be detected as Y_USER by Yorick; 
 
- - copy all *.i, *.py and *.glade files into Y_USER (check.i and
+ - copy all *.i, and *.glade files into Y_USER (check.i and
    cubeview_start.i are not required here);
 
  - copy cubeview_start.i into Y_USER/i-start/
@@ -102,7 +97,5 @@ a user's home directory. See the "add_y_home" function in pathfun.i
    using its full path even if it is not installed properly: e.g.
     man ./cubeview.1
 
- - make sure the "cubeview" shell script and the python script
-   "cubeview.py" are executable: e.g. 
+ - make sure the "cubeview" shell script is executable: e.g. 
       chmod a+x /path/to/cubeview
-      chmod a+x /path/to/cubeview.py

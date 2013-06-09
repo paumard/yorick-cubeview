@@ -53,7 +53,7 @@ if (is_void(cv_ui)) cv_ui="gtk"; // or tws, or text
 // Standard: fits.i, string.i, pnm.i
 // Non standard: gy_gtk.i, coords.i
 
-CUBEVIEW_VERSION="2.0~git";
+CUBEVIEW_VERSION="2.0";
 
 func cv_toolbox_state(wgd, evt, udata)
 {
