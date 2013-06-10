@@ -1,7 +1,13 @@
-cubeview (2.0, in prep.)
+cubeview (2.1)
+  * finalize GUI to make resizing possible to any size
+  * small tweak to re-initialize gycmap each time it is called
+
+ -- Thibaut Paumard <paumard@users.sourceforge.net>  Mon, 10 Jun 2013 10:42:49 +0200
+
+cubeview (2.0)
   * moved from pyk (python based) to gy
 
- -- Thibaut Paumard <paumard@users.sourceforge.net>  Sun, 12 May 2013 10:10:09 +0200
+ -- Thibaut Paumard <paumard@users.sourceforge.net>  Sun, 09 June 2013 10:10:09 +0200
 
 cubeview (1.6)
 
