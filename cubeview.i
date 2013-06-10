@@ -1634,6 +1634,7 @@ func cv_depth(name, udata)
   if (!is_array(name)) {
     if (!name.get_active()) return;
     name = Gtk.Buildable(name).get_name();
+    noop, _cvgy.builder.get_object("3 color").set_active(1);
   }
   if (name=="8bit") cv_interns.depth=8;
   else if (name=="24bit") cv_interns.depth=24;
@@ -1689,7 +1690,10 @@ func cv_gycmap_callback(cmd, map) {
 }
 
 func cv_gycmap(wdg, udata) {
+  extern __gycmap_initialized;
   cv_slwin;
+  noop, _cvgy.builder.get_object("Normal").set_active(1);
+  __gycmap_initialized=0; // temporary hack
   gycmap, cv_gycmap_callback;
 }
 
