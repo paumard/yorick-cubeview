@@ -136,7 +136,7 @@ func cv_gtk(void)
   noop, _cvgy.builder.get_object("slsel").set_active(1);
   noop, _cvgy.builder.get_object("spsel").set_active(1);
 
-  noop, _cvgy.toolbox.show_all();
+  gy_gtk_main, _cvgy.toolbox;
 }
 
 func cv_quit(void)
@@ -1693,7 +1693,6 @@ func cv_gycmap(wdg, udata) {
   extern __gycmap_initialized;
   cv_slwin;
   noop, _cvgy.builder.get_object("Normal").set_active(1);
-  __gycmap_initialized=0; // temporary hack
   gycmap, cv_gycmap_callback;
 }
 
@@ -1890,11 +1889,11 @@ func cv_suspend(wdg, evt, udata) {
 
 */
   if (cv_stand_alone) quit;
-  if (cv_ui=="gtk") gy_gtk_suspend, _cvgy.toolbox;
+  if (cv_ui=="gtk") {
+    noop,_cvgy.toolbox.hide();
+    gy_gtk_idler_maybe_stop;
+  }
   else cv_freemouse;
-  write, "Cubeview suspended.";
-  write, "Type \'cv\' to resume.";
-  write, "Type \'quit\' to quit.";
 }
   
 func cv_splims(wdg, udata)
