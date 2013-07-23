@@ -1,3 +1,7 @@
+cubeview (2.2)
+  * sync with gy (use gy_gtk_main/gy_gtk_idler_maybe_quit)
+ -- Thibaut Paumard <paumard@users.sourceforge.net>  Tue, 23 Jul 2013 11:01:37 -0400
+
 cubeview (2.1)
   * finalize GUI to make resizing possible to any size
   * small tweak to re-initialize gycmap each time it is called

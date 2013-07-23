@@ -1,6 +1,6 @@
 Package: cubeview
 Kind: package
-Version: 2.0
+Version: 2.2
 Revision: 1
 Description: a 3D FITS data viewer specialized in spectro-imaging
 License: GPLv2

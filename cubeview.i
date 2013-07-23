@@ -53,7 +53,7 @@ if (is_void(cv_ui)) cv_ui="gtk"; // or tws, or text
 // Standard: fits.i, string.i, pnm.i
 // Non standard: gy_gtk.i, coords.i
 
-CUBEVIEW_VERSION="2.1";
+CUBEVIEW_VERSION="2.2";
 
 func cv_toolbox_state(wgd, evt, udata)
 {
@@ -136,7 +136,8 @@ func cv_gtk(void)
   noop, _cvgy.builder.get_object("slsel").set_active(1);
   noop, _cvgy.builder.get_object("spsel").set_active(1);
 
-  gy_gtk_main, _cvgy.toolbox;
+  if (is_func(gy_gtk_main)) gy_gtk_main, _cvgy.toolbox;
+  else noop, _cvgy.toolbox.show_all();
 }
 
 func cv_quit(void)
@@ -1890,8 +1891,14 @@ func cv_suspend(wdg, evt, udata) {
 */
   if (cv_stand_alone) quit;
   if (cv_ui=="gtk") {
-    noop,_cvgy.toolbox.hide();
-    gy_gtk_idler_maybe_stop;
+    if (is_void(evt)) evt=1;
+    // cope with gy_gtk.i API changes
+    if (is_func(gy_gtk_hide_on_delete))
+      return gy_gtk_hide_on_delete(wdg, evt, udata);
+    else if (is_func(gy_gtk_suspend))
+      return gy_gtk_suspend(wdg, evt, udata);
+    else 
+      noop,_cvgy.toolbox.hide();
   }
   else cv_freemouse;
 }
