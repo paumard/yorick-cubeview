@@ -1,0 +1,701 @@
+---
+layout: default
+headline: A 3D data viewer geared towards spectro-imaging
+---
+<p class="sectop">Back to <a href="index.html">library index</a>.</p>
+<p class="sectop">Package cubeview (in cubeview.i) - </p>
+<p class="sectop">Index of documented functions or symbols:</p>
+<div class="ndex0s">
+  <div class="ndex1">
+    <h3>C</h3>
+    <p><a href="cubeview.html#cubeview">cubeview</a></p>
+    <p><a href="cubeview.html#cubeview3">cubeview3</a></p>
+    <p><a href="cubeview.html#cubeview3_connect">cubeview3_connect</a></p>
+    <p><a href="cubeview.html#cv_3colslice">cv_3colslice</a></p>
+    <p><a href="cubeview.html#cv_blank">cv_blank</a></p>
+    <p><a href="cubeview.html#cv_circmas">cv_circmas</a></p>
+    <p><a href="cubeview.html#cv_cmd_win_init">cv_cmd_win_init</a></p>
+    <p><a href="cubeview.html#cv_interns">cv_cube</a></p>
+    <p><a href="cubeview.html#cv_current_zaxis">cv_current_zaxis</a></p>
+    <p><a href="cubeview.html#cv_cutreg">cv_cutreg</a></p>
+    <p><a href="cubeview.html#cv_cutregonce">cv_cutregonce</a></p>
+    <p><a href="cubeview.html#cv_cutsel">cv_cutsel</a></p>
+    <p><a href="cubeview.html#cv_defaults">cv_defaults</a></p>
+    <p><a href="cubeview.html#cv_interns">cv_fh</a></p>
+    <p><a href="cubeview.html#cv_freeylimits">cv_freeylimits</a></p>
+    <p><a href="cubeview.html#cv_gauss_smooth">cv_gauss_smooth</a></p>
+    <p><a href="cubeview.html#cv_graphicwindows">cv_graphicwindows</a></p>
+  </div>
+  <div class="ndex2">
+    <p><a href="cubeview.html#cv_handler">cv_handler</a></p>
+    <p><a href="cubeview.html#cv_help">cv_help</a></p>
+    <p><a href="cubeview.html#cv_init">cv_init</a></p>
+    <p><a href="cubeview.html#cv_interns">cv_interns</a></p>
+    <p><a href="cubeview.html#cv_library">cv_library</a></p>
+    <p><a href="cubeview.html#cv_lround">cv_lround</a></p>
+    <p><a href="cubeview.html#cv_newrefwl">cv_newrefwl</a></p>
+    <p><a href="cubeview.html#cv_normalslice">cv_normalslice</a></p>
+    <p><a href="cubeview.html#cv_plfi">cv_plfi</a></p>
+    <p><a href="cubeview.html#cv_pnm">cv_pnm</a></p>
+    <p><a href="cubeview.html#cv_popup2handler">cv_popup2handler</a></p>
+    <p><a href="cubeview.html#cv_popup2_init">cv_popup2_init</a></p>
+    <p><a href="cubeview.html#cv_popuphandler">cv_popuphandler</a></p>
+    <p><a href="cubeview.html#cv_popup_init">cv_popup_init</a></p>
+    <p><a href="cubeview.html#cv_putslbox">cv_putslbox</a></p>
+    <p><a href="cubeview.html#cv_putspbox">cv_putspbox</a></p>
+    <p><a href="cubeview.html#cv_readbb">cv_readbb</a></p>
+    <p><a href="cubeview.html#cv_rgb2indexed">cv_rgb2indexed</a></p>
+  </div>
+  <div class="ndex3">
+    <p><a href="cubeview.html#cv_rgbeps">cv_rgbeps</a></p>
+    <p><a href="cubeview.html#cv_save_sel">cv_save_sel</a></p>
+    <p><a href="cubeview.html#cv_sldraw">cv_sldraw</a></p>
+    <p><a href="cubeview.html#cv_slextract">cv_slextract</a></p>
+    <p><a href="cubeview.html#cv_sllims">cv_sllims</a></p>
+    <p><a href="cubeview.html#cv_slpnm">cv_slpnm</a></p>
+    <p><a href="cubeview.html#cv_slsel">cv_slsel</a></p>
+    <p><a href="cubeview.html#cv_slwin">cv_slwin</a></p>
+    <p><a href="cubeview.html#cv_spdraw">cv_spdraw</a></p>
+    <p><a href="cubeview.html#cv_spextract">cv_spextract</a></p>
+    <p><a href="cubeview.html#cv_spsel">cv_spsel</a></p>
+    <p><a href="cubeview.html#cv_spwin">cv_spwin</a></p>
+    <p><a href="cubeview.html#cv_suspend">cv_suspend</a></p>
+    <p><a href="cubeview.html#cv_tws">cv_tws</a></p>
+    <p><a href="cubeview.html#cv_ui">cv_ui</a></p>
+    <p><a href="cubeview.html#cv_interns">cv_valids</a></p>
+    <p><a href="cubeview.html#cv_vpaspect">cv_vpaspect</a></p>
+    <p><a href="cubeview.html#cv_zoom">cv_zoom</a></p>
+  </div>
+</div>
+<div class="docblock"><a name="cubeview"></a><h3>cubeview</h3>
+  <pre>DOCUMENT cubeview,data
+
+Cubeview is an  almost graphical package base on the  Tiny Widget Set (TWS),
+intended to allow easy access to spectroimaging data, or any 3D data.
+
+The only mandatory  argument, DATA, is either  a 3D array, or the  name of a
+FITS  file  containing such  a  cube. The  spectral  dimension  must be  the
+third. Actually if  you don't specify DATA, the program will  let you try to
+select a file, which is really fine only under ytk, in which case the tcl/tk
+file selection box is used. I don't find the text-only file selection helper
+really useable.
+
+Cubeview uses three windows, selectable through optional keywords:
+  slice_wid=(0)   : the slice window
+  spectrum_wid=(1): the spectrum window
+  cmd_wid=(2)     : the command window, or tool bar.
+
+So Cubeview displays a  slice of the cube, which is really  an image made as
+the sum of  a few planes of the cube  and a spectrum, which is  the sum of a
+few individual spectra. The  slice can also be an RGB image  if you click on
+"3 color  slice". The  third window is  used to  display a few  buttons. The
+labels should be self-explanatory, but you can get help by right clicking on
+one of the buttons.
+
+Some buttons, like  the ones that let you select the  spectrum or the slice,
+remain active  (the text of the button  is then blue) untill  you finish the
+action  by either  right-clicking in  the relevant  window, or  clicking any
+button  in any  non-relevant  window.  The  "Slice  properties" and  "Spect.
+properties" buttons are a little special: when they are clicked, the command
+window is replaced  by a dialog box  in which you can choose  some eye candy
+properties  for  the slice  display,  and the  axis  type  for the  spectra.
+There's  no context  help available  in  these window,  right clicking  them
+reverts to the normal command box.
+
+Using the graphical frontend  to cubeview disables Yorick's standard zooming
+abilities. You can suspend Cubeview  by clicking on the appropiate button to
+re-enable them, or to perform any task on yorick's command line (like make a
+hardcopy  of the  windows...). You  then go  back to  your  running Cubeview
+session by typing  "cv_resume", or "cv" which is an  alias to cv_resume. The
+"limits" set this  this way are kept whil running cubeview,  that may not be
+what you want. You  can free the limits again, or only  the Y axis limits of
+the spectra, by clicking the appropriate buttons.
+
+Cubeview now  supports hooking  user function to  its drawing  routines. See
+source of cv_*_hook for sample usage.
+
+See CV_LIBRARY  for documentation about  the internals. All defaults  can be
+set through  cv_defaults, and overriden passing keywords  to cubeview. These
+keywords are the member names of the struture type CV_Interns.
+
+KEYWORDS: see CV_Interns, see postinit in cv_init.
+     
+SEE  ALSO:   cv_library,  cv_init,  cv_defaults,   CV_Defaults,  cv_interns,
+CV_Interns</pre>
+  
+</div>
+<div class="docblock"><a name="cubeview3"></a><h3>cubeview3</h3>
+  <pre>DOCUMENT cubeview3, caller
+
+ This is a cubeview hook to overplot spectra extracted from two
+ supplementary cubes in addition to the main cv_cube. Use
+ cubeview3_connect to connect this hook.
+</pre>
+  <p>SEE ALSO: <a href="cubeview.html#cubeview">cubeview</a>, <a href="cubeview.html#cubeview3_connect">cubeview3_connect</a></p>
+</div>
+<div class="docblock"><a name="cubeview3_connect"></a><h3>cubeview3_connect</h3>
+  <pre>DOCUMENT cubeview3_connect, cube2, cube3
+      or cubeview, cube1, hook=cubeview3_connect(cube2, cube3)
+
+ Connect the cubeview3 hook to cubeview, which overplots spectra
+ extracted from CUBE2 and CUBE3 whenever cubeview redraws its
+ spectrum plot.  In the first (procedural) form, cubeview must be
+ already running.  The second (functional) form allows connecting
+ the hook directly when invoking cubeview. The three cubes must
+ have the same shape.
+  </pre>
+  <p>SEE ALSO: <a href="cubeview.html#cubeview">cubeview</a>, <a href="cubeview.html#cubeview3">cubeview3</a></p>
+</div>
+<div class="docblock"><a name="cv_3colslice"></a><h3>cv_3colslice</h3>
+  <pre>DOCUMENT cv_3colslice & Cubeview's "3 color slice" radio button
+
+  If you click on this button or  call this routine, all slices from then on
+  will be of type "3 color".
+
+  See cv_normalslice & Cubeview's "Normal slice" radio button.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_blank"></a><h3>cv_blank</h3>
+  <pre>DOCUMENT cv_blank
+
+Puts zeros in the currently selected 3D box. Useful for cleaning.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_circmas"></a><h3>cv_circmas</h3>
+  <pre>DOCUMENT cv_circmas(sx,sy,x0,y0,r,inv=)
+ returns a circular mask,  i.e. a 2D array MASK of size  SXxSY, of type int,
+ such that for any (x,y),
+   - if    INV    is    not    set    (or    null):    (MASK(x,y)==1)    <=>
+     sqrt((x-x0)^2+(y-y0)^2)<=r.
+   - if INV is set, (MASK(x,y)==1) <=> sqrt((x-x0)^2+(y-y0)^2)>r;</pre>
+  
+</div>
+<div class="docblock"><a name="cv_cmd_win_init"></a><h3>cv_cmd_win_init</h3>
+  <pre>DOCUMENT cv_cmd_win_init
+
+  Initializes  Cubeview's  almost  graphical  user  interface.  Not  a  user
+  function: is intended to be called by CUBEVIEW.</pre>
+  
+</div>
+<div class="docsee">
+  <h3>cv_cube</h3><p>SEE: <a href="#cv_interns">cv_interns</a></p>
+</div>
+<div class="docblock"><a name="cv_current_zaxis"></a><h3>cv_current_zaxis</h3>
+  <pre>DOCUMENT cv_current_zaxis()
+
+  Returns  as  a vector  the  spectral  axis  currently used  by  Cubeview,
+  considering the current state of cv_interns.zaxistype.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_cutreg"></a><h3>cv_cutreg</h3>
+  <pre>DOCUMENT cv_cutreg
+
+  On Cubeview's  slice window (CV_INTERNS.SLICE_WID),  select with mouse rectangular area
+  which contrast is to be maximized.
+</pre>
+  <p>SEE ALSO: <a href="cubeview.html#cv_cutsel">cv_cutsel</a>, <a href="cubeview.html#cv_cutregonce">cv_cutregonce</a>, <a href="cubeview.html#cv_library">cv_library</a></p>
+</div>
+<div class="docblock"><a name="cv_cutregonce"></a><h3>cv_cutregonce</h3>
+  <pre>DOCUMENT cv_cutregonce
+      or cv_cutregonce,x0,y0,x1,y1
+
+ Adjust  contrast on  the  output image  by  setting its  min/max value  to
+ min/max  of  selected square  region,  specified  by  corners (x0,y0)  and
+ (x1,y1).  If not specified,  the entire  image is  used. Then  redraws the
+ slice.
+</pre>
+  <p>SEE ALSO: <a href="cubeview.html#cv_cutreg">cv_cutreg</a>, <a href="cubeview.html#cv_library">cv_library</a></p>
+</div>
+<div class="docblock"><a name="cv_cutsel"></a><h3>cv_cutsel</h3>
+  <pre>DOCUMENT cv_cutsel
+
+  On  Cubeview's  slice window  (CV_INTERNS.SLICE_WID),  click from  minimum
+  pixel to maximum pixel to draw.
+</pre>
+  <p>SEE ALSO: <a href="cubeview.html#cv_cutreg">cv_cutreg</a>, <a href="cubeview.html#cv_library">cv_library</a></p>
+</div>
+<div class="docblock"><a name="cv_defaults"></a><h3>cv_defaults</h3>
+  <pre>DOCUMENT cv_defaults
+
+  Instance of CV_Defaults defining defaults for Cubeview.
+
+  cv_defaults=CV_Defaults(slice_wid=0,
+                          sp_wid=1,
+                          cmd_wid=2,
+                          depth=24,
+                          origin=[1,1,1],
+                          scale=[1,1,1],
+                          overs=1,
+                          slboxcol=248,
+                          zwlwise=0,
+                          sltype="Normal",
+                          slpalette="stern.gp",
+                          slinterp="spline",
+                          zaxistype="PIX",
+                          refwl=2.166120,
+                          pixel=1);
+</pre>
+  <p>SEE ALSO: CV_Defaults, <a href="cubeview.html#cubeview">cubeview</a>, <a href="cubeview.html#cv_library">cv_library</a></p>
+</div>
+<div class="docsee">
+  <h3>cv_fh</h3><p>SEE: <a href="#cv_interns">cv_interns</a></p>
+</div>
+<div class="docblock"><a name="cv_freeylimits"></a><h3>cv_freeylimits</h3>
+  <pre>DOCUMENT cv_freeylimits
+
+ Frees  Y limits,  hence the  name...  Indeed,  calls LIMITS  to  uset every
+ limits, then sets back X limits. Very useful if you've set limits using the
+ mouse and want to explore data only within the selected range.
+
+ Normally called through cubeview's "Spectrum Y limits" button.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_gauss_smooth"></a><h3>cv_gauss_smooth</h3>
+  <pre>DOCUMENT sm=cv_gauss_smooth(sp,fwhm)
+
+ Gaussian smoothing of a spectrum or image.
+</pre>
+  <p>SEE ALSO: box_smooth</p>
+</div>
+<div class="docblock"><a name="cv_graphicwindows"></a><h3>cv_graphicwindows</h3>
+  <pre>DOCUMENT cv_graphicwindows : redraw
+Argument:   if true, set cv_nodraw to 0.
+Keywords:   NOKILL:   if   set,   the   windows  are   not   killed   and
+re-initialized. EXTRACT: re-extract spectrum and slice.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_handler"></a><h3>cv_handler</h3>
+  <pre>DOCUMENT cv_handler(uname,button)
+
+  Cubeview  event handler.  Not a  user  function, normally  called only  by
+  TWS_HANDLER.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_help"></a><h3>cv_help</h3>
+  <pre>DOCUMENT cv_help =help,cubeview</pre>
+  
+</div>
+<div class="docblock"><a name="cv_init"></a><h3>cv_init</h3>
+  <pre>DOCUMENT  cv_init,"file.fits"  or  cv_init,3D_array
+
+  It's  probably better  not to  call directly  CV_INIT and  let  the almost
+  graphical tool CUBEVIEW do it.  Initiates Cubeview.  If called with a fits
+  file name, includes  "fits.i" and reads the file.  Feeds  all items of the
+  external  variable CV_INTERNS,  and displays  a  first slice  and a  first
+  spectrum.  After, you could use cv_spsel and cv_slsel.
+
+  Cubeview has a kind of graphical  user interface that can be launched with
+  "cubeview,data", or "cv_resume" once CV_INIT has been called.
+
+  cv_init takes as keyword any member of CV_Defaults, override the defaults.
+
+  In  addition to this,  cv_init will  include any  .i file  specified as
+  POSTINIT keyword.
+</pre>
+  <p>SEE ALSO: <a href="cubeview.html#cubeview">cubeview</a>, <a href="cubeview.html#cv_library">cv_library</a>, <a href="cubeview.html#cv_defaults">cv_defaults</a></p>
+</div>
+<div class="docblock"><a name="cv_interns"></a><h3>cv_interns</h3>
+  <pre>DOCUMENT extern cv_cube, cv_interns
+
+cv_cube is an external variable holding the data cube being viewed
+in Cubeview.
+
+cv_interns is a structure of type CV_Interns, containing all other
+variables shared by Cubeview routines.
+
+cv_valids is a mask indicating which cells in cv_cube are valid
+data. It is used to speed up various treatments, unless the cube
+"isbig".
+
+The most usefull items for the user are .slice and .spectrum,
+pointers to eponym arrays.  .spbox is a 4 elements array containing
+the coordinates of the corners of the region defining the spectrum
+aperture, and likewise .sllims contains the limits of the spectral
+region defining the slice.  .slice is either a NxM indexed color
+array, or a 3xNxM RGB array.
+</pre>
+  <p>SEE ALSO: CV_Interns, <a href="cubeview.html#cubeview">cubeview</a>, <a href="cubeview.html#cv_library">cv_library</a></p>
+</div>
+<div class="docblock"><a name="cv_library"></a><h3>cv_library</h3>
+  <pre>DOCUMENT cubeview, cv_init, cv_spsel,  cv_slsel, cv_cutsel and cv_cutreg are
+the main user level routines.
+
+Cubeview  is   a  set  of   routines  intended  to  ease   visualization  of
+spectroimaging  data. It  is consistant  in its  goals with  the  eponym IDL
+package from the BEAR project.
+
+   cubeview,data starts an almost graphical user interface. If you just want
+                 to  look at  3D data,  just  kick it  off, and  right-click
+                 buttons to get context help. Left click them to use them.
+
+Data are  shared between routines through an  external variable, cv_interns,
+of type CV_Interns. Function names begin with "cv_". Defaults are defined in
+an external variable, cv_defaults, of type CV_Defaults.
+
+The main goal is to display both a slice and a spectrum in two windows.
+
+It is possible  to hook a user  routine to some events. To  do this, just
+set cv_interns.hook to  a string containing the name  of the user routine
+(say,  "MyHook"). This  can  be done  by  means of  the  HOOK keyword  to
+cubeview and cv_init.  Each time  a cv_ function that supports hooking is
+called, the  user function with  get called with  the name of  the caller
+routine as  a single argument: for  instance MyHook("cv_spdraw") whenever
+the  spectrum  gets  redrawn.   The  user function  should  make  use  of
+cv_interns to get any data it  needs.  Grep the source for cv_callhook to
+find out which routines support hooking.
+
+Main routines:
+  cv_init,data: initiates  external variables and windows. Data
+                should be either a FITS file name or a 3D data cube.
+  cv_spsel:     select spectrum in a rectangular area with mouse.
+  cv_slsel:     select slice on the spectrum with mouse.
+  cv_cutsel:    select minimum and maximum value to show (see CMIN and CMAX
+                in bytscl).
+  cv_cutreg:    enclose a rectangular area with mouse, CMIN and CMAX will
+                be min and max in this area.
+  cv_cutregonce: same as cv_cutreg, but just once and not interactively.
+
+Intermediate level routines:
+  cv_slextract,begin,end:  explicitely extract a slice from plane BEGIN to plane END
+  cv_spextract,corners:    explicitely extract a spectrum from a given rectangular aperture
+  cv_sldraw and cv_spdraw: explicitely redraw slice or spectrum. Can extract as well.
+  cv_slwin and cv_spwin:   explicitely select slice or spectrum window.
+  cv_cutregonce:           same as cv_cutreg, but just once and not interactively.
+
+Helper routines:
+  cv_slpnm,filename: write the current slice to a PNM file.
+  cv_blank: "blank" selected volume (setting it to the value specified by
+            the BLANK card of the fits file).
+  
+For the low level routines, use the source.
+  
+Cubeview GUI is based on the Tiny Widget Set (TWS).
+  
+Note: cv_library itself  is a function that does  nothing more than showing
+its own DOCUMENT comment.
+</pre>
+  <p>SEE ALSO: <a href="cubeview.html#cubeview">cubeview</a>, <a href="cubeview.html#cv_interns">cv_interns</a>, <a href="cubeview.html#cv_defaults">cv_defaults</a>, CV_Interns, CV_Defaults, <a href="cubeview.html#cv_library">cv_library</a></p>
+</div>
+<div class="docblock"><a name="cv_lround"></a><h3>cv_lround</h3>
+  <pre>DOCUMENT long=cv_lround(float)
+// from mathbast.i
+Acts as expected : return long(x+0.5*((x>0)*2-1));</pre>
+  
+</div>
+<div class="docblock"><a name="cv_newrefwl"></a><h3>cv_newrefwl</h3>
+  <pre>DOCUMENT cv_newrefwl,refwl
+
+  Change   Cubeview's  reference   wavelength:  set   cv_interns.refwl  and
+  *cv_interns.vaxis.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_normalslice"></a><h3>cv_normalslice</h3>
+  <pre>DOCUMENT cv_normal slice & Cubeview's "Normal slice" radio button
+
+  If you click on this button or  call this routine, all slices from then on
+  will be of type "Normal", that is standard Yorick indexed color image.
+
+  See cv_3colslice & Cubeview's "3 color slice" radio button.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_plfi"></a><h3>cv_plfi</h3>
+  <pre>DOCUMENT cv_plfi,im
+         cv_plfi,im,x1,y1
+         cv_plfi,im,x0,y0,x1,y1
+
+   Draws an RGB image using plf. Syntax  similar to PLI, except im has to be
+   3xNxM of thype char (an RGB image).
+
+   This is to work around a bug that prevents RGB images from being properly
+   output to eps (or ps or epsi...) when using pli.
+</pre>
+  <p>SEE ALSO: plf, pli</p>
+</div>
+<div class="docblock"><a name="cv_pnm"></a><h3>cv_pnm</h3>
+  <pre>DOCUMENT cv_pnm,"filename"
+
+  Writes current slice to pnm file.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_popup2handler"></a><h3>cv_popup2handler</h3>
+  <pre>DOCUMENT cv_popuphandler(uname,button)
+
+  Cubeview event handler for a  popup.  Not a user function, normally called
+  only by TWS_HANDLER.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_popup2_init"></a><h3>cv_popup2_init</h3>
+  <pre>DOCUMENT cv_cmd_win_init
+
+  Initializes  Cubeview's  almost  graphical  user  interface.  Not  a  user
+  function: is intended to be called by CUBEVIEW.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_popuphandler"></a><h3>cv_popuphandler</h3>
+  <pre>DOCUMENT cv_popuphandler(uname,button)
+
+  Cubeview event handler for a  popup.  Not a user function, normally called
+  only by TWS_HANDLER.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_popup_init"></a><h3>cv_popup_init</h3>
+  <pre>DOCUMENT cv_cmd_win_init
+
+  Initializes  Cubeview's  almost  graphical  user  interface.  Not  a  user
+  function: is intended to be called by CUBEVIEW.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_putslbox"></a><h3>cv_putslbox</h3>
+  <pre>DOCUMENT cv_putslbox
+
+Displays a colored box representing the spectral region corresponding to the
+slice in Cubeview's spectral window.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_putspbox"></a><h3>cv_putspbox</h3>
+  <pre>DOCUMENT cv_putspbox
+
+  Puts a box arround the  region defining the current spectrum in cubeview's
+  slice window.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_readbb"></a><h3>cv_readbb</h3>
+  <pre>DOCUMENT box=cv_readbb(filename)
+
+returns bounding box of an eps file.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_rgb2indexed"></a><h3>cv_rgb2indexed</h3>
+  <pre>DOCUMENT cv_rgb2indexed, image, red, green, blue
+
+  Converts RGB image  to indexed color image. This  function is identical to
+  pnm_display in pnm.i,  except it does not plot, but  returns the image and
+  palette  components. This  routines intends  not to  touch the  display in
+  anyway (for instance it does not set the palette.)
+
+  RED, GREEN and BLUE are returned  arrays to feed PALETTE with.  (Unlike in
+  PNM_DISPLAY, they are not returned in an external variable.)
+</pre>
+  <p>SEE ALSO: pnm_display, <a href="cubeview.html#cv_library">cv_library</a></p>
+</div>
+<div class="docblock"><a name="cv_rgbeps"></a><h3>cv_rgbeps</h3>
+  <pre>DOCUMENT cv_rgbeps & Cubeview "Slice -> epsi" button.
+         cv_rgbeps,prefix
+
+  In  the second  form, outputs  Cubeview's current  slice to  an  epsi file
+  PREFIX.epsi (.epsi is appended to  PREFIX). In the first form, prompts for
+  PREFIX  and performs.   When  prompted,  action is  canceled  if you  type
+  "cancel" as a prefix.
+
+  cv_rgbeps uses  a number of external  programs, so works only  on UNIX, if
+  the programs  are installed:  convert (from ImageMagick),  jpeg2ps, latex,
+  dvips  and ps2epsi.   A number  of temporary  files are  written,  but not
+  deleted: (in the following, ~ means PREFIX) ~_axes.ps, ~_im.pnm, ~_im.jpg,
+  ~_im.eps, ~.tex, ~.aux, ~.dvi, ~.ps  and ~.epsi. The file your looking for
+  is PREFIX.epsi. Afterwards, you can  modify PREFIX_im.eps and run latex on
+  PREFIX.tex again... So the intermediate files  can come in handy. And as a
+  side effect, you  also get pnm, jpg and eps versions  of the image without
+  the axes...
+
+  The point  of all this is  that, at least  on my machine, Yorick  does not
+  produce good  RGB eps files, or  I don't know how  to do it. So  I cheat a
+  little bit.   By the way,  this is mostly  usefull for 3 color  slices. It
+  works on normal  slices, producing RGB eps (using  pnm_colorize), that may
+  or may  not be  what you  want.  For normal  slices, I  suggest suspending
+  Cubeview,  switching to  the slice  window  with CV_SLWIN,  and using  the
+  standard EPS function.
+
+  Note that you  can also tell Cubeview  to display 3 color images  at 8 bit
+  depth  (by setting cv_interns.depth  to 8  instead of  24). In  that case,
+  running EPS  manually as  mentioned above works  great. The colors  may be
+  less impressive when a large dynamic  is needed, but this way you can also
+  get the spectrum window with its nice rainbow slice box...
+
+  So in a word, this is here  to take care of the most complicated case, but
+  there are other  simpler means to get the picture,  that may be preferable
+  in most cases.
+
+  Here is a cookbook to get things at 8bit depth:
+
+  1) get your picture interactively at 24bit depths, including the cuts.
+  2) suspend Cubeview.
+  3) switch to 8bit depth: cv_interns.depth=8
+  (3bis: at this point, you may notice  that the cut aren't to great, you can
+   resume Cubeview(cv) to fix them, and suspend again. Screen update does not
+   work to great at 8bit though)
+  4) redraw both windows: cv_graphicwindows
+  5) zoom in with the mouse if you whish...
+  6) switch to slice window: cv_slwin
+  7) dump it to eps file: eps,"filename_slice"
+  8) switch to spectrum window: cv_spwin
+  9) dump it to eps file: eps,"filename_spectrum"
+  10) get back to 24bit display: cv_interns.depth=24 ; cv_graphicwindows;
+  11) resume Cubeview: cv</pre>
+  
+</div>
+<div class="docblock"><a name="cv_save_sel"></a><h3>cv_save_sel</h3>
+  <pre>DOCUMENT cv_save_sel, filename
+
+ Save the subecube currently selected in cubeview (both spectral
+ and spatial dimension) to file FILENAME, updating the FITS
+ header if possible.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_sldraw"></a><h3>cv_sldraw</h3>
+  <pre>DOCUMENT cv_sldraw
+
+  Displays current Cubeview slice (CV_SLICE) in the right window (pointed at
+  by CV_SLICE_WID).  Displays a box around the spectrum region.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_slextract"></a><h3>cv_slextract</h3>
+  <pre>DOCUMENT cv_slextract,begin,end
+
+  Extracts new Cubview slice (*CV_INTERNS.SLICE) by summing up
+  CV_CUBE planes from range BEGIN to range END. If called as a
+  subroutine, updates a few items in CV_INTERNS. As a function,
+  returns the slice.
+
+  If cv_interns.sltype=="3 color", the slice is a 3xNxM array, all
+  3 planes being sums of CV_CUBE planes from BEGIN to END with
+  different ponderations.  This keeps some velocity information in
+  the image displayed... (blueshifted regions can appear in blue
+  and so...)</pre>
+  
+</div>
+<div class="docblock"><a name="cv_sllims"></a><h3>cv_sllims</h3>
+  <pre>DOCUMENT cv_sllims & Cubeview's "Slice limits" button
+
+  Sets the limits of Cubeview's slice window so that the full field
+  is viewed, with squared pixels, and East on the left when world
+  coordinates are in use.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_slpnm"></a><h3>cv_slpnm</h3>
+  <pre>DOCUMENT cv_slpnm
+
+  Write current slice,  affected by current cuts and  palette (for a "Normal
+  slice"), to  an RGB PNM file (PPM),  using PNM_WRITE. The box  is saved in
+  "axes_"+filename+".epsi", so that you can get the original image with axes
+  using  xfig   for  instance,  so  LaTeX  programming   would  probably  be
+  better. For  this kind of purpose,  I recommend using any  tool to convert
+  the slice to JPEG, then jpeg2ps.  That allows to keep JPEG compression for
+  the bitmap part.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_slsel"></a><h3>cv_slsel</h3>
+  <pre>DOCUMENT  cv_slsel, Cubeview's "Select slice" button
+
+Choose rectangle on Window 0  with left mouse button, extracts corresponding
+splice   CV_INTERNS.SLICE   from  CV_INTERNS.DATA,   draws   it  to   window
+CV_INTERNS.SLICE_WID.
+
+CV_SLSEL loops  until you hit  any other button  than the left in  the slice
+window, or any button in any other window.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_slwin"></a><h3>cv_slwin</h3>
+  <pre>DOCUMENT cv_slwin
+Switches to windows CV_INTERNS.SLICE_WID</pre>
+  
+</div>
+<div class="docblock"><a name="cv_spdraw"></a><h3>cv_spdraw</h3>
+  <pre>DOCUMENT cv_spdraw
+
+  Displays  current Cubeview  spectrum (*CV_INTERNS.SPECTRUM)  in  the right
+  window (pointed  at by  CV_INTERNS.SP_WID).  Displays the  spectral region
+  defining the slice on a colored background.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_spextract"></a><h3>cv_spextract</h3>
+  <pre>DOCUMENT cv_spextract,corners
+
+  Extracts  new  Cubeview  spectrum  (*CV_INTERNS.SPECTRUM)  by  summing  up
+  *CV_INTERNS.DATA   spectra  included  in   rectangular  area   difined  by
+  CORNERS=[X0,Y0,X1,Y1]. Updates CV_INTERNS accordingly.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_spsel"></a><h3>cv_spsel</h3>
+  <pre>DOCUMENT  cv_spsel, Cubeview's "Select spectrum button".
+
+Choose rectangle on Window 0  with left mouse button, extracts corresponding
+spectrum  *CV_INTERNS.SPECTRUM  from CV_CUBE,  draws  it to  window
+CV_INTERNS.SP_WID.
+
+CV_SPSEL loops  until you hit any other window.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_spwin"></a><h3>cv_spwin</h3>
+  <pre>DOCUMENT cv_slwin Switches to windows CV_INTERNS.SP_WID</pre>
+  
+</div>
+<div class="docblock"><a name="cv_suspend"></a><h3>cv_suspend</h3>
+  <pre>DOCUMENT Cubeview SUSPEND button.
+
+Click button to suspend Cubeview. You can resume afeterwards using CV_RESUME.</pre>
+  
+</div>
+<div class="docblock"><a name="cv_tws"></a><h3>cv_tws</h3>
+  <pre>DOCUMENT cv_tws or cv
+
+  Resume a Cubeview almost graphical user interface session.
+
+  While the event handler is runing, you don't have access to the command
+  line to do anything not implemented in the GUI.
+
+  Cubeview  allows you  to suspend  a session  by right  clicking  in its
+  toolbar, and resume  whenever you want by calling  this simple routine.
+  It may not  work if you do  weird things such as trying  to run another
+  session  of Cubeview  or  any other  TWS  base software  (that is  only
+  Cubeview for now...)
+
+  If the  keyword GRAPHIC_WINDOWS is  set to a  non zero value,  then the
+  slice  and spectrum  windows are  reset, which  is not  a good  idea if
+  you've just spent half an hour trying to get the best zoom.
+
+  cv is an alias to cv_resume</pre>
+  
+</div>
+<div class="docblock"><a name="cv_ui"></a><h3>cv_ui</h3>
+  <pre>DOCUMENT cv_ui = "gtk"
+      or cv_ui = "tws"
+      or cv_ui = "text"
+Which ui should cubeview use? This is the initial default, the last
+one used is remembered for the duration of the session.</pre>
+  
+</div>
+<div class="docsee">
+  <h3>cv_valids</h3><p>SEE: <a href="#cv_interns">cv_interns</a></p>
+</div>
+<div class="docblock"><a name="cv_vpaspect"></a><h3>cv_vpaspect</h3>
+  <pre>DOCUMENT cv_vpaspect,x,y
+      or cv_vpaspect,x/y
+      or cv_vpaspect,data
+
+ Set  the  viewport  of  current  graphic  window  so  that  it  has  the
+ appropriate aspect  ratio to display an  XxY image.  In  the third form,
+ data  may be  a 2-or-more  dimensional array,  and it  is  equivalent to
+ cv_vpaspect,dimsof(data(2)),dimsof(data(3)).
+
+ Note  that the new  viewport always  fits in  the old  one, so  that the
+ viewport gets  smaller and smaller  as you set  it again and  again with
+ cv_vpaspect. Use vpset to change the size of the viewport.
+</pre>
+  <p>SEE ALSO: vpset, coords.i, style.i, get_style, set_style</p>
+</div>
+<div class="docblock"><a name="cv_zoom"></a><h3>cv_zoom</h3>
+  <pre>DOCUMENT cv_zoom
+
+A zoom  similar to  that provided directly  by yorick.  left,  middle and
+left click zoom-in, pan and  soom-out respectively; when control is hold,
+button  1 zooms on  drawn rectangle,  buttons 2  and 3  zoom out  so that
+viewport is  downscaled to drawn rectangle (unlike  default zoomer). When
+control is hold, normal zoom  is perform dragging low-left to high-right:
+other combination  cause one or both  of the axes to  be inverted (unlike
+default zoomer).
+
+Click in another window to stop.
+
+See also: limits</pre>
+  
+</div>

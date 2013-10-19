@@ -1,0 +1,55 @@
+---
+layout: default
+headline: A 3D data viewer geared towards spectro-imaging
+---
+<p class="sectop">Back to <a href="index.html">library index</a>.</p>
+<p class="sectop">Package bear (in bear.i) - </p>
+<p class="sectop">Index of documented functions or symbols:</p>
+<div class="ndex0s">
+  <div class="ndex1">
+    <h3>B</h3>
+    <p><a href="bear.html#bear_faxis">bear_faxis</a></p>
+  </div>
+  <div class="ndex2">
+    <h3>I</h3>
+  </div>
+  <div class="ndex3">
+    <p><a href="bear.html#is_bear">is_bear</a></p>
+  </div>
+</div>
+<div class="docblock"><a name="bear_faxis"></a><h3>bear_faxis</h3>
+  <pre>DOCUMENT bear_faxis
+
+ Returns frequency axis for a BEAR data set in cm-1.
+
+ INPUTS: fh: FITS file handle of a BEAR cube or spectrum as used in
+ fits.i or header array as used in newfits.i.
+
+ KEYWORDS:
+  P,CEN_FREQ,FILTERLB,FILTERUB,FSR_OFF,FSR_LEN,NAXIS3,SPAXIS
+
+ As keywords  override FITS cards,  it is not  necessary to provide fh  if a
+ sufficient number of keywords are given.
+
+ Necessary information is:
+  P ;
+  CEN_FREQ: central frequency,  or indeed any frequency in  the FSR, defaults
+   to (FILTERLB+FILTERUB)/2;
+  NAXIS3: number of points in  the spectral dimension, which is determined by
+   SPAXIS;
+  SPAXIS: index  of the  spectral dimension, defaults  to the last  one (FITS
+   card "NAXIS");
+  FSR_OFF: offset between FSR ad cube, defaults to 0;
+  FSR_LEN: number of planes in the FSR, defaults to NAXIS3.
+
+ FITS cards used:
+  P,FILTERLB,FILTERUB,FSR_OFF,FSR_LEN,NAXISn,NAXIS</pre>
+  
+</div>
+<div class="docblock"><a name="is_bear"></a><h3>is_bear</h3>
+  <pre>DOCUMENT is_bear(fh)
+
+ Tells if FITS header FH belongs to a BEAR data set, using FITS
+ card "INSTRUME".</pre>
+  
+</div>

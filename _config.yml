@@ -1,0 +1,8 @@
+prefix: "http://dhmunro.github.com/yorick-doc"
+pkgname: "cubeview"
+pkgtitle: "A 3D data viewer geared towards spectro-imaging"
+
+keywords: yorick, documentation, manual
+description: Yorick Documentation
+
+exclude: gh-pages, gh-pages.src, ydoc.pl, README.md
