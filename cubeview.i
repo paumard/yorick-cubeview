@@ -2934,6 +2934,7 @@ func __cubeview_before_init
   if (cv_stand_alone) {
     noop, GLib.set_prgname("Cubeview");
     noop, GLib.set_application_name("Cubeview");
+    noop, gy.Gdk.set_allowed_backends("x11,*");
   }
 }
 
